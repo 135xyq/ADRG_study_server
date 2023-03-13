@@ -28,33 +28,33 @@ class AppletConfig extends BaseServer
         return $this->success();
     }
 
-    // 修改小程序配置信息
-    public function update(Request $request){
-        $id = $request->param('id');
-        // 验证数据合理性
-        try {
-            validate(AppletConfigValidate::class)->scene('update')->check([
-                'id' => $id
-            ]);
-        } catch (ValidateException $e) {
-            return $this->error($e->getError());
-        }
-        if(empty($this->appletConfigModel->where('id',$id)->find())){
-            return $this->error('id传入错误！要修改的配置不存在！');
-        }
-        if(!empty($request->param('appid'))){
-            $saveData['appid'] = $request->param('appid');
-        }
-        if(!empty($request->param('secret'))){
-            $saveData['appid'] = $request->param('secret');
-        }
-        $bool = $this->appletConfigModel->where('id',$id)->update($saveData);
-        if($bool){
-            return $this->success('修改成功！');
-        }else{
-            return $this->error('修改失败');
-        }
-    }
+     // 修改小程序配置信息
+     public function update(Request $request){
+         $id = $request->param('id');
+         // 验证数据合理性
+         try {
+             validate(AppletConfigValidate::class)->scene('update')->check([
+                 'id' => $id
+             ]);
+         } catch (ValidateException $e) {
+             return $this->error($e->getError());
+         }
+         if(empty($this->appletConfigModel->where('id',$id)->find())){
+             return $this->error('id传入错误！要修改的配置不存在！');
+         }
+         if(!empty($request->param('appid'))){
+             $saveData['appid'] = $request->param('appid');
+         }
+         if(!empty($request->param('secret'))){
+             $saveData['secret'] = $request->param('secret');
+         }
+         $bool = $this->appletConfigModel->where('id',$id)->update($saveData);
+         if($bool){
+             return $this->success('修改成功！');
+         }else{
+             return $this->error('修改失败');
+         }
+     }
 
     // 新增小程序配置
     public function add(Request $request){
