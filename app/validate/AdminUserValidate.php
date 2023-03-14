@@ -23,6 +23,7 @@ class AdminUserValidate extends Validate
 
     protected $scene = [
         'login' => ['account','password'],
-        'edit' => ['id']
+        'edit' => ['id'],
+        'updatePassword' => ['password']
     ];
 }
