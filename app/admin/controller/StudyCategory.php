@@ -70,6 +70,15 @@ class StudyCategory extends BaseServer
             return $this->error($e->getError());
         }
 
+        // 验证是否存在同名的分类
+        if (!empty($data['name'])) {
+            $count = $this->studyCategory->where('name','=',$data['name'])->count();
+            if($count) {
+                return $this->error('分类名已存在');
+            }
+        }
+
+
         $res = StudyCategoryModel::create($data);
         if ($res !== false) {
             // 记录日志
