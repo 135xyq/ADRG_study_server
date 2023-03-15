@@ -37,7 +37,7 @@ class BaseServer
      * @param $code int 状态，成功为1
      * @return \think\response\Json 请求响应
      */
-    protected function error($msg = "fail",$code = 1){
+    public function error($msg = "fail", $code = 1){
         $result['code'] = $code;
         $result['msg'] = $msg;
         $result['data'] = empty($this->result) ? new \stdClass() : $this->result;
@@ -51,6 +51,6 @@ class BaseServer
      * @return void
      */
     protected function writeDoLog($data){
-        event('DoLog',['user'=>Session::get('admin_info')['account'],'content'=>$data]);
+        event('DoLog',['user'=>Session::get('admin_info')['title'],'content'=>$data]);
     }
 }

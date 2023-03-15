@@ -1,5 +1,5 @@
 <?php
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\listener;
 
@@ -13,13 +13,13 @@ class DoLog
      */
     public function handle($event)
     {
-            $data['username'] = $event['user'];
-            $data['url'] = request()->url(true);
-            $data['ip'] = request()->ip();
-            $data['useragent'] = request()->server('HTTP_USER_AGENT');
-            $data['content'] = json_encode($event['content'],JSON_UNESCAPED_UNICODE);
-            $data['type'] = 2;
+        $data['username'] = $event['user'];
+        $data['url'] = request()->url(true);
+        $data['ip'] = request()->ip();
+        $data['useragent'] = request()->server('HTTP_USER_AGENT');
+        $data['content'] = json_encode($event['content'], JSON_UNESCAPED_UNICODE);
+        $data['type'] = 2;
 
-            Log::create($data);
+        Log::create($data);
     }
 }

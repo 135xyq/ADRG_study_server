@@ -44,7 +44,7 @@ class Login extends BaseServer
                 Session::set('admin_info',$userInfo);
 
                 // 写入登录日志
-                event('LoginLog', ['user' => $res['account']]);
+                event('LoginLog', ['user' => $res['title']]);
 
                 return $this->success('登录成功！');
             }else{
