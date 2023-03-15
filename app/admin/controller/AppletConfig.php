@@ -7,6 +7,7 @@ use app\common\BaseServer;
 use app\model\AppletConfig as AppletConfigModel;
 use app\Request;
 use app\validate\AppletConfigValidate;
+use think\facade\Session;
 use think\exception\ValidateException;
 
 class AppletConfig extends BaseServer
@@ -50,6 +51,9 @@ class AppletConfig extends BaseServer
          }
          $bool = $this->appletConfigModel->where('id',$id)->update($saveData);
          if($bool){
+             // 写入操作日志
+             $this->writeDoLog($request->param());
+
              return $this->success('修改成功！');
          }else{
              return $this->error('修改失败');

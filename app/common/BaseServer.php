@@ -3,6 +3,7 @@
 namespace app\common;
 
 use think\facade\Log;
+use think\facade\Session;
 
 class BaseServer
 {
@@ -43,5 +44,13 @@ class BaseServer
         $jsonResult = json_encode($result);
         Log::write($jsonResult);
         return json($result);
+    }
+
+    /** 操作日志写入
+     * @param $data {array} 请求内容
+     * @return void
+     */
+    protected function writeDoLog($data){
+        event('DoLog',['user'=>Session::get('admin_info')['account'],'content'=>$data]);
     }
 }

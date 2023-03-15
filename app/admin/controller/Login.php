@@ -42,6 +42,10 @@ class Login extends BaseServer
                 ];
                 // 将用户信息存到session中，用于获取管理员信息
                 Session::set('admin_info',$userInfo);
+
+                // 写入登录日志
+                event('LoginLog', ['user' => $res['account']]);
+
                 return $this->success('登录成功！');
             }else{
                 return $this->error('密码错误！');
