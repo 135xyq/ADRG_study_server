@@ -66,10 +66,17 @@ class StudyCategory extends BaseServer
 
         $res = StudyCategoryModel::create($data);
         if ($res !== false) {
+            // 记录日志
+            $this->writeDoLog($data);
+
+            // 响应信息
             $this->result = $res;
             return $this->success('新增成功！');
         } else {
             return $this->error('新增失败！');
         }
     }
+
+
+
 }
