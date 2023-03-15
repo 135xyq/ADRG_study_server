@@ -7,9 +7,15 @@ use app\Request;
 use app\validate\StudyCategoryValidate;
 use app\model\StudyCategory as StudyCategoryModel;
 use think\exception\ValidateException;
+use think\facade\Session;
 
 class StudyCategory extends BaseServer
 {
+    private $studyCategory;
+    public function __construct()
+    {
+        $this->studyCategory = new StudyCategoryModel();
+    }
 
     /**
      * 分页获取数据
@@ -52,8 +58,8 @@ class StudyCategory extends BaseServer
     {
 
         $data = [];
-        $data['name'] = $request->param('name','');
-        $data['description'] = $request->param('description','');
+        $data['name'] = $request->param('name', '');
+        $data['description'] = $request->param('description', '');
 
         try {
             validate(StudyCategoryValidate::class)->scene('add')->check([
@@ -78,5 +84,71 @@ class StudyCategory extends BaseServer
     }
 
 
+    /**
+     * 删除一个分类
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function delete(Request $request)
+    {
+        $id = $request->param('id', '');
+
+        try {
+            validate(StudyCategoryValidate::class)->scene('delete')->check([
+                'id' => $id
+            ]);
+        } catch (ValidateException $e) {
+            return $this->error($e->getError());
+        }
+
+        $res = StudyCategoryModel::destroy($id);
+        if ($res === true) {
+            return $this->success('删除成功！');
+        } else {
+            return $this->error('删除失败！');
+        }
+    }
+
+
+    /**
+     * 修改分类
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DbException
+     */
+    public function update(Request $request)
+    {
+
+        try {
+            validate(StudyCategoryValidate::class)->scene('update')->check($request->param());
+        } catch (ValidateException $e) {
+            return $this->error($e->getError());
+        }
+        $id = $request->param('id');
+
+        $data = [];
+
+        // 判断分类名是否冲突
+        if (!empty($request->param('name'))) {
+            $data['name'] = $request->param('name');
+            $count = $this->studyCategory::where('name','=',$data['name'])->count();
+            if($count) {
+                return $this->error('分类名已存在');
+            }
+        }
+        if(!empty($request->param('description'))) {
+            $data['description'] = $request->param('description');
+        }
+        if(!empty($data)) {
+            $data['id'] = $id;
+            // 写入日志数据库
+            $this->writeDoLog($request->param());
+
+            $this->studyCategory->update($data);
+        }
+
+        return $this->success('修改成功！');
+
+    }
 
 }
