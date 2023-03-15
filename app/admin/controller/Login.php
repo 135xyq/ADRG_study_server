@@ -1,5 +1,7 @@
 <?php
 
+// 管理员登录
+
 namespace app\admin\controller;
 
 use app\common\BaseServer;

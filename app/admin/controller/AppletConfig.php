@@ -1,5 +1,8 @@
 <?php
 
+
+// 小程序配置信息
+
 namespace app\admin\controller;
 
 // 小程序配置信息
