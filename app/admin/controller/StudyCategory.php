@@ -34,7 +34,7 @@ class StudyCategory extends BaseServer
 
         $field = 'id,name,description,create_time,update_time';
 
-        $query = StudyCategoryModel::where('name', 'like', '%' . $name . '%');
+        $query = $this->studyCategory->where('name', 'like', '%' . $name . '%');
 
 
         // 统计数量
@@ -79,7 +79,7 @@ class StudyCategory extends BaseServer
         }
 
 
-        $res = StudyCategoryModel::create($data);
+        $res = $this->studyCategory->create($data);
         if ($res !== false) {
             // 记录日志
             $this->writeDoLog($data);
@@ -110,7 +110,7 @@ class StudyCategory extends BaseServer
             return $this->error($e->getError());
         }
 
-        $res = StudyCategoryModel::destroy($id);
+        $res = $this->studyCategory->destroy($id);
 
 
         if ($res === true) {
