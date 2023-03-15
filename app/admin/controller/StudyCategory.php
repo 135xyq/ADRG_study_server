@@ -102,7 +102,12 @@ class StudyCategory extends BaseServer
         }
 
         $res = StudyCategoryModel::destroy($id);
+
+
         if ($res === true) {
+            // 写入日志数据库
+            $this->writeDoLog($request->param());
+
             return $this->success('删除成功！');
         } else {
             return $this->error('删除失败！');
@@ -131,7 +136,7 @@ class StudyCategory extends BaseServer
         // 判断分类名是否冲突
         if (!empty($request->param('name'))) {
             $data['name'] = $request->param('name');
-            $count = $this->studyCategory::where('name','=',$data['name'])->count();
+            $count = $this->studyCategory::where([['name','=',$data['name']],['id','<>',$id]])->count();
             if($count) {
                 return $this->error('分类名已存在');
             }
