@@ -51,6 +51,8 @@ class BaseServer
      * @return void
      */
     protected function writeDoLog($data){
-        event('DoLog',['user'=>Session::get('admin_info')['title'],'content'=>$data]);
+        if(Session::has('admin_info')){
+            event('DoLog',['user'=>Session::get('admin_info')['title'],'content'=>$data]);
+        }
     }
 }

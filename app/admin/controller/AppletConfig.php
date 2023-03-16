@@ -1,7 +1,7 @@
 <?php
 
 
-// 小程序配置信息
+// 小程序配置控制器
 
 namespace app\admin\controller;
 
