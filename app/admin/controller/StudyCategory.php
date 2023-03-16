@@ -158,9 +158,17 @@ class StudyCategory extends Base
                 return $this->error('分类名已存在');
             }
         }
+
+        //判断是否修改描述信息
         if(!empty($request->param('description'))) {
             $data['description'] = $request->param('description');
         }
+
+        // 判断是否修改状态
+        if($request->param('status','') !== '') {
+            $data['status'] = $request->param('status');
+        }
+
         if(!empty($data)) {
             $data['id'] = $id;
             // 写入日志数据库
