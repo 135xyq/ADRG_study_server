@@ -7,8 +7,6 @@ use think\facade\Session;
 
 class BaseServer
 {
-    protected $result = null;
-    protected $error = null;
 
     /**
      * 请求成功
@@ -16,10 +14,11 @@ class BaseServer
      * @param $code int 状态，成功为0
      * @return \think\response\Json 请求响应
      */
-    protected function success($msg = "success",$code = 0){
+    public function success($msg = "success", $data = [], $code = 0)
+    {
         $result['code'] = $code;
         $result['msg'] = $msg;
-        $result['data'] = empty($this->result) ? new \stdClass() : $this->result;
+        $result['data'] = empty($data) ? new \stdClass() : $data;
         return json($result);
     }
 
@@ -27,8 +26,9 @@ class BaseServer
      * 返回错误
      * @return mixed|null
      */
-    public function getEorror(){
-        return $this->error;
+    public function getEorror($error)
+    {
+        return $error;
     }
 
     /**
@@ -37,11 +37,13 @@ class BaseServer
      * @param $code int 状态，成功为1
      * @return \think\response\Json 请求响应
      */
-    public function error($msg = "fail", $code = 1){
+    public function error($msg = "fail",$data = [],  $code = 1)
+    {
         $result['code'] = $code;
         $result['msg'] = $msg;
-        $result['data'] = empty($this->result) ? new \stdClass() : $this->result;
+        $result['data'] = empty($data) ? new \stdClass() : $data;
         $jsonResult = json_encode($result);
+        // 写入日志
         Log::write($jsonResult);
         return json($result);
     }
@@ -50,9 +52,10 @@ class BaseServer
      * @param $data {array} 请求内容
      * @return void
      */
-    protected function writeDoLog($data){
-        if(Session::has('admin_info')){
-            event('DoLog',['user'=>Session::get('admin_info')['title'],'content'=>$data]);
+    public function writeDoLog($data)
+    {
+        if (Session::has('admin_info')) {
+            event('DoLog', ['user' => Session::get('admin_info')['title'], 'content' => $data]);
         }
     }
 }

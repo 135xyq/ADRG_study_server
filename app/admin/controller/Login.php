@@ -70,7 +70,7 @@ class Login extends Base
 
         // 获取到登录用户的id,通过id管理员详情
         $tokenInfo = AdminSession::where('token', $token)->find();
-        $id = json_decode($tokenInfo->data)->id;
+        $id = json_decode($tokenInfo['data'])->id;
         $res = AdminUser::find($id);
 
         return $this->success('success',$res);

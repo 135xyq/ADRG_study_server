@@ -13,7 +13,7 @@
 // | 自定义配置
 // +----------------------------------------------------------------------
 return [
-    'token_expire_time' => '120', // 登录过期时间单位秒
+    'token_expire_time' => '300', // 登录过期时间单位秒
     'upload_subdir'		=> 'Ym',				//文件上传二级目录 标准的日期格式
     'nocheck'			=> ['admin/Login/login'],	//不需要验证权限的url
     'dump_extension'	=> 'xlsx',				//默认导出格式
