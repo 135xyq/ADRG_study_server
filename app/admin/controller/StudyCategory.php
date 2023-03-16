@@ -32,11 +32,17 @@ class StudyCategory extends Base
         $page = $request->param('page', 1, 'intval');
         $limit = $request->param('limit', 20, 'intval');
         $name = $request->param('name', ''); // 根据分类名查询数据
+        $status = $request->param('status', ''); // 根据状态查询数据
 
-        $field = 'id,name,description,create_time,update_time';
+        $field = 'id,name,description,status,create_time,update_time';
+
 
         $query = $this->studyCategory->where('name', 'like', '%' . $name . '%');
 
+        // 根据状态查询
+        if($status !== '') {
+            $query->where('status',$status);
+        }
 
         // 统计数量
         $count = $query->count();
@@ -60,12 +66,14 @@ class StudyCategory extends Base
 
         $data = [];
         $data['name'] = $request->param('name', '');
+        $data['status'] = $request->param('status', 1);
         $data['description'] = $request->param('description', '');
 
         try {
             validate(StudyCategoryValidate::class)->scene('add')->check([
                 'name' => $data['name'],
-                'description' => $data['description']
+                'description' => $data['description'],
+                'status' => $data['status']
             ]);
         } catch (ValidateException $e) {
             return $this->error($e->getError());
@@ -82,9 +90,9 @@ class StudyCategory extends Base
 
         $res = $this->studyCategory->create($data);
         if ($res !== false) {
+
             // 记录日志
             $this->writeDoLog($data);
-
             // 响应信息
             return $this->success('新增成功！',$res);
         } else {
