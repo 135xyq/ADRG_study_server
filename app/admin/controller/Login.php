@@ -126,6 +126,9 @@ class Login extends Base
                     'status' => 0
                 ]);
 
+                // 写入操作日志
+                $this->writeDoLog($request->param());
+
                 return $this->success('密码修改成功！');
             }else {
                 return $this->error('密码修改失败！');

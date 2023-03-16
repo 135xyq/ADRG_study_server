@@ -28,8 +28,21 @@ class Base extends BaseController
     protected function getError($error){
         return $this->baseServer->getEorror($error);
     }
-    protected function writeDoLog($data){
-        $this->baseServer->writeDoLog($data);
+
+
+    /** 操作日志写入
+     * @param $data {array} 请求内容
+     * @return void
+     */
+    public function writeDoLog($data)
+    {
+        // 获取登录的用户信息
+        $token = $this->getToken();
+        $tokenInfo = AdminSession::where('token','=',$token)->find();
+        $info = json_decode($tokenInfo['data']);
+
+        // 触发事件
+        event('DoLog', ['user' => $info->title, 'content' => $data]);
     }
 
 
@@ -86,7 +99,7 @@ class Base extends BaseController
      * 获取token
      * @return array|string
      */
-    protected function getToken() {
+    public function getToken() {
         return  Request::header('Authorization');
     }
 

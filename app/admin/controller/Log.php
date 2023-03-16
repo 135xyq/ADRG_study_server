@@ -71,6 +71,10 @@ class Log extends Base
         $ids = ['id'=>explode(',',$id)];
         $bool = LogModel::destroy($ids);
         if($bool){
+
+            // 写入操作日志
+            $this->writeDoLog($request->param());
+
             return $this->success('删除成功！');
         }else{
             return $this->error('删除失败');

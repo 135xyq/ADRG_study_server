@@ -7,7 +7,6 @@ use think\facade\Session;
 
 class BaseServer
 {
-
     /**
      * 请求成功
      * @param $msg string 请求信息
@@ -49,14 +48,4 @@ class BaseServer
         return json($result);
     }
 
-    /** 操作日志写入
-     * @param $data {array} 请求内容
-     * @return void
-     */
-    public function writeDoLog($data)
-    {
-        if (Session::has('admin_info')) {
-            event('DoLog', ['user' => Session::get('admin_info')['title'], 'content' => $data]);
-        }
-    }
 }
