@@ -4,11 +4,10 @@
 
 namespace app\admin\controller;
 
-use app\common\BaseServer;
 use app\Request;
 use app\model\Log as LogModel;
 
-class Log extends BaseServer
+class Log extends Base
 {
     /**
      * 分页查询数据
@@ -48,14 +47,13 @@ class Log extends BaseServer
         // 统计总数据量
         $count = $query->count();
 
-
         $res = $query->field($field)->order('id','desc')->page($page, $limit)->select()->toArray();
 
-        $this->result = [
+        $data = [
             'total' => $count,
             'data' => $res
         ];
-        return $this->success();
+        return $this->success('success', $data);
     }
 
 
@@ -88,8 +86,7 @@ class Log extends BaseServer
         if(empty($res)) {
             return $this->error('日志记录不存在！');
         } else {
-            $this->result = $res;
-            return $this->success();
+            return $this->success('success',$res);
         }
     }
 }

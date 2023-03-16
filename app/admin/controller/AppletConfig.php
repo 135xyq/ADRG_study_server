@@ -6,18 +6,19 @@
 namespace app\admin\controller;
 
 // 小程序配置信息
-use app\common\BaseServer;
+
 use app\model\AppletConfig as AppletConfigModel;
 use app\Request;
 use app\validate\AppletConfigValidate;
-use think\facade\Session;
+use think\App;
 use think\exception\ValidateException;
 
-class AppletConfig extends BaseServer
+class AppletConfig extends Base
 {
 
     protected $appletConfigModel;
-    public function __construct(){
+    public function __construct(App $app){
+        parent::__construct($app);
         $this->appletConfigModel = new AppletConfigModel();
     }
         //获取配置信息
@@ -25,11 +26,10 @@ class AppletConfig extends BaseServer
         $config = AppletConfigModel::select();
         // 存在配置
         if(count($config) >0){
-            $this->result = $config[0];
+            return $this->success('success', $config[0]);
         }else{
-            $this->result = [];
+            return $this->success('t');
         }
-        return $this->success();
     }
 
      // 修改小程序配置信息

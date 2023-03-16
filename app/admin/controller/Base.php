@@ -100,21 +100,21 @@ class Base extends BaseController
      */
     protected function checkTokenAuth() {
 
-        $token = $this->getToken();
+        $token = Request::header('Authorization');
 
         if(empty($token)) {
-            return $this->error('token不能为空，请确保处于登录状态！');
+            abort(403,'token不能为空，请确保处于登录状态！');
         }
 
         // 获取到指定的token信息
         $tokenInfo = AdminSession::where('token','=', $token)->find();
 
         if(empty($tokenInfo)) {
-            return $this->error('token不存在！登录信息错误！');
+            abort(403,'token不存在！登录信息错误！');
         }
 
         if($tokenInfo['status'] === 0) {
-            return $this->error('登录信息失效！请重新登录！');
+            abort(403,'登录信息失效！请重新登录！');
         }
 
 
@@ -123,7 +123,7 @@ class Base extends BaseController
         // dump(time());
 
         if (($tokenInfo['expire_time'] + config('my.token_expire_time')) < time()) {
-            abort(101, '登录状态已过期，请重新登录');
+            abort(403, '登录状态已过期，请重新登录');
         }
     }
 }

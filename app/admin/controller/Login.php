@@ -48,8 +48,9 @@ class Login extends Base
                 // // 将用户信息存到session中，用于获取管理员信息
                 // Session::set('admin_info',$userInfo);
                 //
-                // // 写入登录日志
-                // event('LoginLog', ['user' => $res['title']]);
+
+                // 写入登录日志
+                event('LoginLog', ['user' => $res['title']]);
 
                 $token = $this->setToken($res); // 获取登录的token
                 $result = ['token'=>$token];
@@ -95,17 +96,17 @@ class Login extends Base
     public function updatePassword(Request $request) {
         $oldPassword = $request->param('oldPassword');
         $newPassword = $request->param('newPassword');
-        $token = $request->param('token');
-        if(Session::has('token')){
-            // token输入错误，无法修改
-            if($token !== Session::get('token')){
-                return $this->error('权限不够！');
-            }
-        }else{
-            // 未登录
-            return $this->error('无法修改！');
+        $token = $this->getToken(); // 获取token
+
+        $tokenInfo = AdminSession::where('token','=', $token)->find();
+
+        if(empty($tokenInfo)){
+            return $this->error('token有误！');
         }
-        $user = AdminUser::where('account',Session::get('admin_info')['account'])->find();
+
+        $id = json_decode($tokenInfo['data'])->id; // 获取管理员id
+        $user = AdminUser::find($id);
+
         if(md5($oldPassword) !== $user['password']) {
             return $this->error('原密码输入错误！');
         } else{

@@ -34,6 +34,7 @@ class BaseServer
     /**
      * 请求失败
      * @param $msg string 请求信息
+     * @param $data Object 请求数据
      * @param $code int 状态，成功为1
      * @return \think\response\Json 请求响应
      */

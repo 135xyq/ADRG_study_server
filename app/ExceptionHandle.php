@@ -79,21 +79,20 @@ class ExceptionHandle extends Handle
             }
         }
 
-
-
         //db异常
         if ($e instanceof DbException) {
             return response($e->getMessage(), 500);
         }
 
-        // 请求异常 多为自定义的请求异常
+        // 请求异常 自定义的请求异常
         if ($e instanceof HttpException) {
             Log::error('错误信息:' . $e->getMessage());
-            if ($this->error_log_db) {
+            // 500错误才会记录
+            if (($e->getStatusCode() === 500) && $this->error_log_db) {
                 event('ExceptionLog', $e->getMessage());
             }
             return json([
-                'code' => 1,
+                'code' => $e->getStatusCode(),
                 'msg' => $e->getMessage(),
                 'data' => new \stdClass()
             ]);

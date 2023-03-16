@@ -6,14 +6,15 @@ use app\common\BaseServer;
 use app\Request;
 use app\validate\StudyCategoryValidate;
 use app\model\StudyCategory as StudyCategoryModel;
+use think\App;
 use think\exception\ValidateException;
-use think\facade\Session;
 
-class StudyCategory extends BaseServer
+class StudyCategory extends Base
 {
     private $studyCategory;
-    public function __construct()
+    public function __construct(App $app)
     {
+        parent::__construct($app);
         $this->studyCategory = new StudyCategoryModel();
     }
 
@@ -42,11 +43,11 @@ class StudyCategory extends BaseServer
 
         $res = $query->field($field)->page($page, $limit)->select();
 
-        $this->result = [
+        $result = [
             'total' => $count,
             'data' => $res
         ];
-        return $this->success();
+        return $this->success('success', $result);
     }
 
     /**
@@ -85,8 +86,7 @@ class StudyCategory extends BaseServer
             $this->writeDoLog($data);
 
             // 响应信息
-            $this->result = $res;
-            return $this->success('新增成功！');
+            return $this->success('新增成功！',$res);
         } else {
             return $this->error('新增失败！');
         }
