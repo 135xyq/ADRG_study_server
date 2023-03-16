@@ -34,7 +34,7 @@ class StudyCategory extends Base
         $name = $request->param('name', ''); // 根据分类名查询数据
         $status = $request->param('status', ''); // 根据状态查询数据
 
-        $field = 'id,name,description,status,create_time,update_time';
+        $field = 'id,name,description,status,sort,create_time,update_time';
 
 
         $query = $this->studyCategory->where('name', 'like', '%' . $name . '%');
@@ -68,6 +68,7 @@ class StudyCategory extends Base
         $data['name'] = $request->param('name', '');
         $data['status'] = $request->param('status', 1);
         $data['description'] = $request->param('description', '');
+        $data['sort'] = $request->param('sort', 1);
 
         try {
             validate(StudyCategoryValidate::class)->scene('add')->check([
@@ -162,6 +163,11 @@ class StudyCategory extends Base
         //判断是否修改描述信息
         if(!empty($request->param('description'))) {
             $data['description'] = $request->param('description');
+        }
+
+        //判断是否修改排序信息
+        if($request->param('sort','') !== '') {
+            $data['sort'] = $request->param('sort');
         }
 
         // 判断是否修改状态
