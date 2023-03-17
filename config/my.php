@@ -14,10 +14,9 @@
 // +----------------------------------------------------------------------
 return [
     'token_expire_time' => '10080', // 登录过期时间单位秒 七天免登陆
-    'upload_subdir'		=> 'Ym',				//文件上传二级目录 标准的日期格式
+    'upload_subdir'		=> 'Ymd',				//文件上传二级目录 标准的日期格式
     'nocheck'			=> ['admin/Login/login'],	//不需要验证权限的url
     'dump_extension'	=> 'xlsx',				//默认导出格式
-    'filetype'	=> 'jpg,jpeg,png,gif,mp4,3gp,m3u8,doc,docx,xls,xlsx,pem',  //上传文件文件类型
+    'filetype'	=> 'jpg,jpeg,png,gif,mp4',  //上传文件文件类型
     'filesize'	=> 50,				            //上传文件最大限制(M)
-    'check_file_status'	=> true,			//上传图片是否检测图片存在
 ];
