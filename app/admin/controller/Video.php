@@ -36,12 +36,13 @@ class Video extends Base
         $title = $request->param('title', '');
         $status = $request->param('status', '');
         $show_cover = $request->param('show_cover', '');
+        $category = $request->param('category','');
 
         $where =[];
 
-        // 判断状态和显示是否合法
+        // 判断状态和显示是否合法 video.status 查找防止和studyCategory的status冲突
         if($status !== '' && in_array($status,[0,1])){
-            $where['status'] = $status;
+            $where['video.status'] = $status;
         }
         if($show_cover !== '' && in_array($show_cover,[0,1])){
             $where['show_cover'] = $show_cover;
@@ -56,6 +57,11 @@ class Video extends Base
         // 标题查询
         if(!empty($title)) {
             $query->where('title','like','%'.$title.'%');
+        }
+
+        // 分类查询
+        if(!empty($category)) {
+            $query->hasWhere('studyCategory',['id' => $category]);
         }
 
         $total = $query->where($where)->count();
