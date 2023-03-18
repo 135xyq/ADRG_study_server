@@ -36,7 +36,7 @@ class Login extends Base
         $res = AdminUser::where('account',$data['account'])->find();
         if($res){
             // 验证密码是否正确
-            if($res['password'] === md5($data['password'])){
+            if($res['password'] === $data['password']){
                 // Session::set('token',md5($data['account'].$data['password']));
                 // $this->result = ['token'=>md5($data['account'].$data['password'])];
                 // // 要保存的用户信息
