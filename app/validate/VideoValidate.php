@@ -12,7 +12,10 @@ class VideoValidate extends Validate
         'url' => 'require',
         'show_cover' => 'require|in:0,1',
         'status' => 'require|in:0,1',
-        'study_category_id' => 'require'
+        'study_category_id' => 'require',
+        'thumbnail_url' => 'require',
+        'duration' => 'require',
+        'file_size' => 'require'
     ];
 
     protected $message = [
@@ -23,12 +26,14 @@ class VideoValidate extends Validate
         'status.in' => '状态不合法',
         'show_cover.require' => '是否优先展示状态不能为空',
         'show_cover.in' => '是否优先展示状态不合法',
-        'study_category_id.require' => '所属分类不能为空'
+        'study_category_id.require' => '所属分类不能为空',
+        'thumbnail_url.require' => '封面不能为空'
     ];
 
     protected $scene = [
-        'add' => ['title','url','show_cover','status','show_cover'],
+        'add' => ['title','url','show_cover','status','thumbnail_url','duration','file_size'],
         'delete' =>['id'],
-        'update' => ['id','title','url','show_cover','status','show_cover'],
+        // 'update' => ['id']
+        'update' => ['id','title','url','show_cover','status','thumbnail_url','duration','file_size'],
     ];
 }

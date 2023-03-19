@@ -17,6 +17,6 @@ return [
     'upload_subdir'		=> 'Ymd',				//文件上传二级目录 标准的日期格式
     'nocheck'			=> ['admin/Login/login'],	//不需要验证权限的url
     'dump_extension'	=> 'xlsx',				//默认导出格式
-    'filetype'	=> 'jpg,jpeg,png,gif,mp4',  //上传文件文件类型
+    'filetype'	=> 'jpg,jpeg,png,gif,mp4,mkv',  //上传文件文件类型
     'filesize'	=> 100,				            //上传文件最大限制(M)
 ];

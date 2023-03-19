@@ -3,7 +3,7 @@
 namespace app\admin\controller;
 
 use app\Request;
-use app\validate\StudyCategoryValidate;
+use app\validate\VideoValidate;
 use think\App;
 use think\exception\ValidateException;
 use app\model\Video as VideoModel;
@@ -101,7 +101,7 @@ class Video extends Base
     }
 
     /**
-     * 新增一个分类
+     * 新增一个视频
      * @param Request $request
      * @return \think\response\Json
      */
@@ -110,7 +110,7 @@ class Video extends Base
         $data = $request->param();
 
         try {
-            validate(StudyCategoryValidate::class)->scene('add')->check($data);
+            validate(VideoValidate::class)->scene('add')->check($data);
         } catch (ValidateException $e) {
             return $this->error($e->getError());
         }
@@ -134,6 +134,22 @@ class Video extends Base
         } else {
             return $this->error('新增失败！');
         }
+    }
+
+    public function update(Request $request) {
+        $data = $request->param();
+
+        try {
+            validate(VideoValidate::class)->scene('update')->check($data);
+        }catch (ValidateException $e){
+            return $this->error($e->getError());
+        }
+
+        VideoModel::update($data);
+        // 记录日志
+        $this->writeDoLog($data);
+
+        return $this->success('修改成功！');
     }
 
 }
