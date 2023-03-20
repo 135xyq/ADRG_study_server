@@ -37,6 +37,7 @@ class Video extends Base
         $status = $request->param('status', '');
         $show_cover = $request->param('show_cover', '');
         $category = $request->param('category','');
+        $order = $request->param('order',''); // 排序方式
 
         $where =[];
 
@@ -65,6 +66,8 @@ class Video extends Base
         }
 
         $total = $query->where($where)->count();
+        // 排序
+        $query->order($order,'desc');
         $data = $query->page($page,$limit)->select();
 
         $res = [
@@ -83,7 +86,7 @@ class Video extends Base
     public function delete(Request $request) {
         $id = $request->param('id');
 
-        if(!$id){
+        if(empty($id)){
             return $this->error('参数错误！');
         }
 
