@@ -13,4 +13,9 @@ class StudyCategory extends Model
     {
         return $this->hasMany(Video::class,'study_category_id');
     }
+
+    public function article()
+    {
+        return $this->hasMany(Article::class,'study_category_id');
+    }
 }
