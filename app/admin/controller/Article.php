@@ -160,4 +160,23 @@ class Article extends Base
         return $this->success('修改成功！');
     }
 
+    // /**
+    public function detail(Request $request) {
+        $id = $request->param('id');
+
+        // id不能为空
+        if(empty($id)) {
+            return $this->error('id不能为空！');
+        }
+
+        $res = $this->article->find($id);
+
+        // id输入有误
+        if(empty($res)) {
+            return $this->error('id输入错误！');
+        }
+
+        return $this->success('success',$res);
+    }
+
 }
