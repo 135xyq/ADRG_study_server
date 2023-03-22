@@ -36,4 +36,31 @@ class Video extends BaseServer
         $data = ['total'=>$total,'data'=>$res];
         return $this->success('success',$data);
     }
+
+
+    /**
+     * 根据分类获取视频分页列表
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function page(Request $request) {
+        // 获取分类id
+        $id = $request->param('category_id');
+        $page = $request->param('page',1,'intval');
+        $limit = $request->param('limit',10,'intval');
+
+        if(empty($id)) {
+            return $this->error('请选择分类!');
+        }
+
+        $query = $this->video->where([['status','=',1],['study_category_id','=',$id]]);
+
+        $total = $query->count();
+        $res = $query->page($page,$limit)->select();
+        $data = ['total'=>$total,'data'=>$res];
+        return $this->success('success',$data);
+    }
 }
