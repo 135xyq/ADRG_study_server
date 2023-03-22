@@ -34,6 +34,6 @@ class Video extends BaseServer
         $total = $query->count();
         $res = $query->select();
         $data = ['total'=>$total,'data'=>$res];
-        return $this->error('success',$data);
+        return $this->success('success',$data);
     }
 }
