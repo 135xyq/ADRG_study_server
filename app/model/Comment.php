@@ -10,7 +10,7 @@ class Comment extends Model
     use SoftDelete;
 
     // 获取评论用户
-    public function applet_user() {
+    public function user() {
         return $this->belongsTo(AppletUser::class);
     }
 

@@ -47,9 +47,17 @@ class Comment extends Base
         }
 
         // 筛选基本条件
-        $query = $this->comment->where($where);
+        $query = $this->comment::with(['video' => function ($query) {
+            $query->field('id,title');
+        }, 'article' => function ($query) {
+            $query->field('id,title');
+        },'user' => function($query) {
+            $query->field('id,nick_name');
+        }])->where($where);
+
+
         // 状态筛选
-        if ( $status !== '' ) {
+        if ($status !== '') {
             $query->where('status', '=', $status);
         }
 
@@ -115,26 +123,27 @@ class Comment extends Base
      * @param Request $request
      * @return \think\response\Json
      */
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $id = $request->param('id');
 
         try {
             validate(CommentValidate::class)->scene('delete')->check(
                 ['id' => $id]
             );
-        }catch (ValidateException $e) {
+        } catch (ValidateException $e) {
             return $this->error($e->getError());
         }
 
-        $ids = ['id'=>explode(',',$id)];
+        $ids = ['id' => explode(',', $id)];
         $bool = CommentModel::destroy($ids);
-        if($bool){
+        if ($bool) {
 
             // 写入操作日志
             $this->writeDoLog($request->param());
 
             return $this->success('删除成功！');
-        }else{
+        } else {
             return $this->error('删除失败');
         }
     }
