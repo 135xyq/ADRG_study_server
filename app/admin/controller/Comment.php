@@ -3,8 +3,10 @@
 namespace app\admin\controller;
 
 use app\Request;
+use app\validate\CommentValidate;
 use think\App;
 use app\model\Comment as CommentModel;
+use think\exception\ValidateException;
 
 class Comment extends Base
 {
@@ -52,13 +54,54 @@ class Comment extends Base
         }
 
         $total = $query->count(); // 统计数量
-        $res = $query->page($page,$limit)->select();
+        $res = $query->page($page, $limit)->select();
 
         $data = [
             'total' => $total,
             'data' => $res
         ];
 
-        return $this->success('success',$data);
+        return $this->success('success', $data);
+    }
+
+
+    /**
+     * 评论审核
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function audit(Request $request)
+    {
+        // 评论审核需要的数据
+        $id = $request->param('id');
+        $status = $request->param('status');
+        $err_msg = $request->param('err_msg'); // 审核不通过的错误信息
+
+        // 数据验证
+        try {
+            validate(CommentValidate::class)->scene('audit')->check([
+                'id' => $id,
+                'status' => $status
+            ]);
+        } catch (ValidateException $e) {
+            return $this->error('fail', $e->getError());
+        }
+
+        $comment = $this->comment->find($id);
+        if (empty($comment)) {
+            return $this->error('评论不存在');
+        }
+
+        // 无法从审核成功到未审核
+        if ($status == 0 && $comment['status'] !== 0) {
+            return $this->error('状态修改不合理');
+        }
+
+        $comment->status = $status;
+        $comment->err_msg = $err_msg;
+        $comment->save();
+
+        return $this->success('审核成功！');
+
     }
 }
