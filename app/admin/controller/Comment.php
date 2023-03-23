@@ -104,4 +104,33 @@ class Comment extends Base
         return $this->success('审核成功！');
 
     }
+
+    /**
+     * 删除评论，支持批量删除
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function delete(Request $request) {
+        $id = $request->param('id');
+
+        try {
+            validate(CommentValidate::class)->scene('delete')->check(
+                ['id' => $id]
+            );
+        }catch (ValidateException $e) {
+            return $this->error($e->getError());
+        }
+
+        $ids = ['id'=>explode(',',$id)];
+        $bool = CommentModel::destroy($ids);
+        if($bool){
+
+            // 写入操作日志
+            $this->writeDoLog($request->param());
+
+            return $this->success('删除成功！');
+        }else{
+            return $this->error('删除失败');
+        }
+    }
 }
