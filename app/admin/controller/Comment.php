@@ -8,6 +8,7 @@ use think\App;
 use app\model\Comment as CommentModel;
 use think\exception\ValidateException;
 
+
 class Comment extends Base
 {
     protected $comment;
@@ -46,7 +47,11 @@ class Comment extends Base
         }
 
         // 筛选基本条件
-        $query = $this->comment->where($where)->where('status', '=', $status);
+        $query = $this->comment->where($where);
+        // 状态筛选
+        if ( $status !== '' ) {
+            $query->where('status', '=', $status);
+        }
 
         // 关键词筛选
         if (!empty($keyword)) {
