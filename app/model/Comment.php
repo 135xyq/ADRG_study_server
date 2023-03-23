@@ -17,24 +17,24 @@ class Comment extends Model
     // 关联视频表
     public function video()
     {
-        return $this->belongsTo(Comment::class);
+        return $this->belongsTo(Video::class);
     }
 
     // 关联文章表
     public function article()
     {
-        return $this->belongsTo(Comment::class);
+        return $this->belongsTo(Article::class);
     }
 
     // 获取评论的父评论信息
     public function parentComment()
     {
-        return $this->belongsTo('Comment', 'parent_id');
+        return $this->belongsTo(Comment::class, 'parent_id');
     }
 
     // 获取评论的子评论信息
     public function childComments()
     {
-        return $this->hasMany('Comment', 'parent_id');
+        return $this->hasMany(Comment::class, 'parent_id');
     }
 }
