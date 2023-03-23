@@ -139,6 +139,11 @@ class Video extends Base
         }
     }
 
+    /**
+     * 更新视频
+     * @param Request $request
+     * @return \think\response\Json
+     */
     public function update(Request $request) {
         $data = $request->param();
 
@@ -153,6 +158,18 @@ class Video extends Base
         $this->writeDoLog($data);
 
         return $this->success('修改成功！');
+    }
+
+    public function detail(Request $request)
+    {
+        $id = $request->param('id');
+
+        if(empty($id)) {
+            return $this->error('视频id不能为空');
+        }
+        $res = $this->video->find($id);
+
+        return $this->success('success',$res);
     }
 
 }
