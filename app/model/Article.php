@@ -9,7 +9,16 @@ class Article extends Model
 {
     use SoftDelete;
 
-    public function studyCategory(){
+    // 关联分类表
+    public function studyCategory()
+    {
         return $this->belongsTo(StudyCategory::class);
     }
+
+    // 关联评论表
+    public function comment()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
 }
