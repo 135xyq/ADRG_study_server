@@ -47,7 +47,7 @@ class Comment extends Base
         }
 
         // 筛选基本条件
-        $query = $this->comment::with(['video' => function ($query) {
+        $query = $this->comment->with(['video' => function ($query) {
             $query->field('id,title');
         }, 'article' => function ($query) {
             $query->field('id,title');
