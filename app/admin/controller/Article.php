@@ -160,7 +160,14 @@ class Article extends Base
         return $this->success('修改成功！');
     }
 
-    // /**
+    /**
+     * 文章详情
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function detail(Request $request) {
         $id = $request->param('id');
 
