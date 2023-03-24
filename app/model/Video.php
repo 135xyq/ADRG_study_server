@@ -9,15 +9,6 @@ class Video extends Model
 {
     use SoftDelete;
 
-    /**
-     * 监听视频删除事件，删除之前先删除评论
-     * @param $article
-     * @return mixed|void
-     */
-    public static function onBeforeDelete($video)
-    {
-        Comment::where('video_id',$video->id)->select()->delete();
-    }
     // 关联评论表
     public function studyCategory()
     {
@@ -28,6 +19,18 @@ class Video extends Model
     public function comment()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * 监听视频删除事件，删除之前先删除评论、收藏、点赞
+     * @param $article
+     * @return mixed|void
+     */
+    public static function onBeforeDelete($video)
+    {
+        Comment::where('video_id',$video->id)->select()->delete();
+        Like::where('video_id',$video->id)->select()->delete();
+        Star::where('video_id',$video->id)->select()->delete();
     }
 
     /**

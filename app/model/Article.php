@@ -22,13 +22,16 @@ class Article extends Model
     }
 
     /**
-     * 监听文章删除事件，删除之前先删除评论
+     * 监听文章删除事件，删除之前先删除评论、点赞、收藏记录
+     *
      * @param $article
      * @return mixed|void
      */
     public static function onBeforeDelete($article)
     {
         Comment::where('article_id',$article->id)->select()->delete();
+        Like::where('article_id',$article->id)->select()->delete();
+        Star::where('article_id',$article->id)->select()->delete();
     }
 
 
