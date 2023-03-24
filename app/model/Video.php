@@ -29,4 +29,25 @@ class Video extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    /**
+     * 更新视频的数据、评论数量
+     * @return void
+     * @throws \think\db\exception\DbException
+     */
+    public function updateStatistics()
+    {
+        // 统计评论数
+        $commentCount = Comment::where('video_id', $this->id)->count();
+
+        // 统计点赞数
+        // $likeCount = Like::where('article_id', $this->id)->count();
+
+        // 更新文章表中的相应字段
+        $this->comment_count = $commentCount;
+
+        // $this->like_count = $likeCount;
+        $this->save();
+    }
+
 }

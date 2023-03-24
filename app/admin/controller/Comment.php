@@ -7,7 +7,7 @@ use app\validate\CommentValidate;
 use think\App;
 use app\model\Comment as CommentModel;
 use think\exception\ValidateException;
-
+use app\model\Article;
 
 class Comment extends Base
 {
@@ -141,6 +141,7 @@ class Comment extends Base
 
             // 写入操作日志
             $this->writeDoLog($request->param());
+
 
             return $this->success('删除成功！');
         } else {

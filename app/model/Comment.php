@@ -37,4 +37,45 @@ class Comment extends Model
     {
         return $this->hasMany(Comment::class, 'parent_id');
     }
+
+    /**
+     * 监听评论删除，统计文章和视频的评论数量
+     * @param $comment
+     * @return void
+     */
+    public static function onAfterDelete($comment)
+    {
+        $article = $comment->article;
+        // 更新文章的评论数
+        if($article) {
+            $article->updateStatistics();
+        }
+
+        // 更新视频的评论数
+        $video = $comment->video;
+        if($video) {
+            $video->updateStatistics();
+        }
+
+    }
+
+    /**
+     * 监听评论新增，统计评论数量
+     * @param $comment
+     * @return void
+     */
+    public static function onAfterInsert($comment)
+    {
+        $article = $comment->article;
+        // 更新文章的评论数
+        if($article) {
+            $article->updateStatistics();
+        }
+
+        // 更新视频的评论数
+        $video = $comment->video;
+        if($video) {
+            $video->updateStatistics();
+        }
+    }
 }
