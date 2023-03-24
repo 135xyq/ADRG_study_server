@@ -84,6 +84,11 @@ class ExceptionHandle extends Handle
             return response($e->getMessage(), 500);
         }
 
+        //error系统层面错误异常
+        if ($e instanceof ErrorException) {
+            return response($e->getMessage(), 500);
+        }
+
         // 请求异常 自定义的请求异常
         if ($e instanceof HttpException) {
             Log::error('错误信息:' . $e->getMessage());
