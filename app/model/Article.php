@@ -43,12 +43,13 @@ class Article extends Model
         $commentCount = Comment::where('article_id', $this->id)->count();
 
         // 统计点赞数
-        // $likeCount = Like::where('article_id', $this->id)->count();
+        $likeCount = Like::where('article_id', $this->id)->count();
 
-        // 更新文章表中的相应字段
+        // 更新文章表中的评论字段
         $this->comment_count = $commentCount;
 
-        // $this->like_count = $likeCount;
+        // 更新文章表中的点赞字段
+        $this->like_count = $likeCount;
         $this->save();
     }
 
