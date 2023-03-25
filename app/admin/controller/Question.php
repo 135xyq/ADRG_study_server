@@ -135,9 +135,6 @@ class Question extends Base
         $res = $this->question->create($data);
         if ($res !== false) {
 
-            // 记录日志
-            $this->writeDoLog($data);
-
             // 响应信息
             return $this->success('新增成功！',$res);
         } else {
@@ -167,5 +164,34 @@ class Question extends Base
         }else{
             return $this->error('删除失败');
         }
+    }
+
+    /**
+     * 更新问题
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function update(Request $request) {
+        $data = $request->param();
+
+        try {
+            validate(QuestionValidate::class)->scene('update')->check($data);
+        }catch (ValidateException $e){
+            return $this->error($e->getError());
+        }
+
+        // 判断分类名是否冲突
+        if (!empty($data['title'])) {
+            $count = $this->question->where([['title','=',$data['title']],['id','<>',$data['id']]])->count();
+            if($count) {
+                return $this->error('题目已存在');
+            }
+        }
+
+        QuestionModel::update($data);
+        // 记录日志
+        $this->writeDoLog($data);
+
+        return $this->success('修改成功！');
     }
 }
