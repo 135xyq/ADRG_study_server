@@ -41,7 +41,8 @@ class QuestionCategory extends Base
         }
 
         $total = $query->count();
-        $res = $query->page($page,$limit)->select();
+        // 排序、分页输出
+        $res = $query->order('sort','desc')->page($page,$limit)->select();
 
         $data = [
             'total'=> $total,
