@@ -18,4 +18,16 @@ class StudyCategory extends Model
     {
         return $this->hasMany(Article::class,'study_category_id');
     }
+
+    /**
+     * 监听分类的删除事件,在删除前先删除分类下的文章和视频
+     *
+     * @param $studyCategory
+     * @return mixed|void
+     */
+    public static function onBeforeDelete($studyCategory)
+    {
+        Article::where('study_category_id',$studyCategory->id)->select()->delete();
+        Video::where('study_category_id',$studyCategory->id)->select()->delete();
+    }
 }
