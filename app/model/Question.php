@@ -21,4 +21,31 @@ class Question extends Model
     {
         return $this->belongsTo(QuestionCategory::class);
     }
+    /**
+     * 监听题目删除，统计分类的题目数量
+     * @param $question
+     * @return void
+     */
+    public static function onAfterDelete($question)
+    {
+        $questionCategory = $question->questionCategory ;
+        // 更新分类的题目数
+        if($questionCategory ) {
+            $questionCategory ->updateStatistics();
+        }
+    }
+
+    /**
+     * 监听题目新增，统计题目数量
+     * @param $question
+     * @return void
+     */
+    public static function onAfterInsert($question )
+    {
+        $questionCategory = $question->questionCategory ;
+        // 更新分类的题目数
+        if($questionCategory ) {
+            $questionCategory ->updateStatistics();
+        }
+    }
 }

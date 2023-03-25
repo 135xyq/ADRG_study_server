@@ -24,4 +24,15 @@ class QuestionCategory extends Model
     {
         Question::where('question_category_id',$questionCategory->id)->select()->delete();
     }
+
+    public function updateStatistics()
+    {
+        // 统计问题的数量
+        $questionCount = Question::where('question_category_id', $this->id)->count();
+
+        // 更新文章表中评论数量
+        $this->question_count = $questionCount;
+
+        $this->save();
+    }
 }
