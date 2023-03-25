@@ -145,5 +145,27 @@ class Question extends Base
         }
     }
 
+    /**
+     * 批量删除问题
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function delete(Request $request) {
+        $id = $request->param('id');
+        if(!$id){
+            return $this->error('请选择删除的问题！');
+        }
 
+        $ids = ['id'=>explode(',',$id)];
+        $bool = QuestionModel::destroy($ids);
+        if($bool){
+
+            // 写入操作日志
+            $this->writeDoLog($request->param());
+
+            return $this->success('删除成功！');
+        }else{
+            return $this->error('删除失败');
+        }
+    }
 }
