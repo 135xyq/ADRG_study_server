@@ -13,4 +13,15 @@ class QuestionCategory extends Model
     public function question() {
         return $this->hasMany(Question::class);
     }
+
+    /**
+     * 监听分类的删除事件,在删除前先删除分类下的题目
+     *
+     * @param $questionCategory
+     * @return mixed|void
+     */
+    public static function onBeforeDelete($questionCategory)
+    {
+        Question::where('question_category_id',$questionCategory->id)->select()->delete();
+    }
 }

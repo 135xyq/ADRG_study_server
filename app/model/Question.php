@@ -21,5 +21,4 @@ class Question extends Model
     {
         return $this->belongsTo(QuestionCategory::class);
     }
-
 }
