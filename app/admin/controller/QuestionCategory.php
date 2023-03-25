@@ -127,4 +127,59 @@ class QuestionCategory extends Base
             return $this->error('删除失败！');
         }
     }
+
+    /**
+     * 修改分类
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DbException
+     */
+    public function update(Request $request)
+    {
+
+        try {
+            validate(QuestionCategoryValidate::class)->scene('update')->check($request->param());
+        } catch (ValidateException $e) {
+            return $this->error($e->getError());
+        }
+        $id = $request->param('id');
+
+        $data = [];
+
+        // 判断分类名是否冲突
+        if (!empty($request->param('title'))) {
+            $data['title'] = $request->param('title');
+            $count = $this->questionCategory::where([['title','=',$data['title']],['id','<>',$id]])->count();
+            if($count) {
+                return $this->error('分类名已存在');
+            }
+        }
+
+        //判断是否修改描述信息
+        if(!empty($request->param('description'))) {
+            $data['description'] = $request->param('description');
+        }
+
+        //判断是否修改排序信息
+        if($request->param('sort','') !== '') {
+            $data['sort'] = $request->param('sort');
+        }
+
+        // 判断是否修改状态
+        if($request->param('status','') !== '') {
+            $data['status'] = $request->param('status',1,'intval');
+        }
+
+        if(!empty($data)) {
+            $data['id'] = $id;
+            // 写入日志数据库
+            $this->writeDoLog($request->param());
+
+            $this->questionCategory->update($data);
+        }
+
+        return $this->success('修改成功！');
+
+    }
+
 }
