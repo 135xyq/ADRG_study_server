@@ -182,4 +182,19 @@ class QuestionCategory extends Base
 
     }
 
+
+    /**
+     * 获取分类列表
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function list(Request $request) {
+        $res = $this->questionCategory->select();
+        return $this->success('success',$res);
+    }
+
+
 }
