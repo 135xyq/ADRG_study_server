@@ -97,4 +97,34 @@ class QuestionCategory extends Base
             return $this->error('新增失败！');
         }
     }
+
+    /**
+     * 删除一个分类
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function delete(Request $request)
+    {
+        $id = $request->param('id', '');
+
+        try {
+            validate(QuestionCategoryValidate::class)->scene('delete')->check([
+                'id' => $id
+            ]);
+        } catch (ValidateException $e) {
+            return $this->error($e->getError());
+        }
+
+        $res = $this->questionCategory->destroy($id);
+
+
+        if ($res === true) {
+            // 写入日志数据库
+            $this->writeDoLog($request->param());
+
+            return $this->success('删除成功！');
+        } else {
+            return $this->error('删除失败！');
+        }
+    }
 }
