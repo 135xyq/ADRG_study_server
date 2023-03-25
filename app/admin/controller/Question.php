@@ -3,8 +3,10 @@
 namespace app\admin\controller;
 
 use app\Request;
+use app\validate\QuestionValidate;
 use think\App;
 use app\model\Question as QuestionModel;
+use think\exception\ValidateException;
 
 class Question extends Base
 {
@@ -16,6 +18,14 @@ class Question extends Base
         $this->question = new QuestionModel();
     }
 
+    /**
+     * 分页查询获取数据
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function page(Request $request) {
         $page = $request->param('page',1,'intval');
         $limit = $request->param('limit',20,'intval');
@@ -57,9 +67,9 @@ class Question extends Base
         }
 
         // 有无解析查询
-        if($parse == 1) {
+        if($parse === 1) {
             $query->where('parse','not null');
-        }else if($parse == 0){
+        }else if($parse === 0){
             $query->where('parse','null');
         }
 
@@ -77,5 +87,63 @@ class Question extends Base
 
         return $this->success('success',$data);
     }
+
+
+    /**
+     * 新增一个分类
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function add(Request $request)
+    {
+
+        $data = [];
+        $data['title'] = $request->param('title', '');
+        $data['status'] = $request->param('status', '');
+        $data['type'] = $request->param('type', '');
+        $data['options'] = $request->param('options' );
+        $data['answer'] = $request->param('answer');
+        $data['parse'] = $request->param('parse');
+        $data['level'] = $request->param('level');
+        $data['question_category_id'] = $request->param('question_category_id');
+
+        // 数据验证
+        try {
+            validate(QuestionValidate::class)->scene('add')->check([
+                'title' => $data['title'],
+                'type'=> $data['type'],
+                'level'=>$data['level'],
+                'answer'=>$data['answer'],
+                'status'=>$data['status'],
+                'question_category_id'=>$data['question_category_id']
+            ]);
+        } catch (ValidateException $e) {
+            return $this->error($e->getError());
+        }
+
+        var_dump($data['options']);
+
+        // 验证是否存在同名的题目
+        if (!empty($data['title'])) {
+            $count = $this->question->where('title','=',$data['title'])->count();
+            if($count) {
+                return $this->error('题目名已存在');
+            }
+        }
+
+
+        $res = $this->question->create($data);
+        if ($res !== false) {
+
+            // 记录日志
+            $this->writeDoLog($data);
+
+            // 响应信息
+            return $this->success('新增成功！',$res);
+        } else {
+            return $this->error('新增失败！');
+        }
+    }
+
 
 }

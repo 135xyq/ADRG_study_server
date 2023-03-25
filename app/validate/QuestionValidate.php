@@ -2,7 +2,9 @@
 
 namespace app\validate;
 
-class QuestionValidate
+use think\Validate;
+
+class QuestionValidate extends Validate
 {
     protected $rule = [
         'id' => 'require',
@@ -11,6 +13,7 @@ class QuestionValidate
         'level' => 'require|in:0,1,2',
         'answer' => 'require',
         'status' => 'require|in:0,1',
+        'question_category_id' => 'require'
     ];
 
     protected $message = [
@@ -22,12 +25,13 @@ class QuestionValidate
         'level.in' => '问题的级别不合法',
         'answer.require' => '答案不能为空',
         'status.require' => '问题的状态不能为空',
-        'status.in' => '问题的状态不合法'
+        'status.in' => '问题的状态不合法',
+        'question_category_id' => '请选择分类'
     ];
 
     protected $scene = [
-        'add' => ['title','type','level','answer','status'],
+        'add' => ['title','type','level','answer','status','question_category_id'],
         'delete' => ['id'],
-        'update' => ['id'],
+        'update' => ['id','title','type','level','answer','status','question_category_id'],
     ];
 }
