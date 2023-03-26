@@ -12,8 +12,8 @@ class Question extends Model
 
     // 确定选项和答案的格式，便于输出
     protected $type = [
-        'options' => 'object',
-        'answer' => 'array'
+        'options' => 'json',
+        'answer' => 'json'
     ];
 
     // 关联分类表

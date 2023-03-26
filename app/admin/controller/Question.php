@@ -121,7 +121,6 @@ class Question extends Base
             return $this->error($e->getError());
         }
 
-        var_dump($data['options']);
 
         // 验证是否存在同名的题目
         if (!empty($data['title'])) {
@@ -132,6 +131,7 @@ class Question extends Base
         }
 
 
+        // dump($data);
         $res = $this->question->create($data);
         if ($res !== false) {
 
