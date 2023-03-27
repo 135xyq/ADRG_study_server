@@ -43,4 +43,23 @@ class AppletUser extends Base
         return $this->success('success', $data);
 
     }
+
+
+    /**
+     * 查询用户列表
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function searchUserList(Request $request) {
+        $name = $request->param('name','');
+
+        $field = ['nick_name as name','id'];
+
+        $res = $this->appletUser->where('nick_name','like','%'.$name.'%')->field($field)->limit(20)->select();
+
+        return $this->success('success',$res);
+    }
 }
