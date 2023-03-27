@@ -2,6 +2,7 @@
 
 namespace app\admin\controller;
 
+use app\model\AppletUser;
 use app\Request;
 use app\validate\StarValidate;
 use think\App;
@@ -32,6 +33,7 @@ class Star extends Base
         $limit = $request->param('limit', 20, 'intval');
         $article = $request->param('article', ''); // 文章id
         $video = $request->param('video', ''); // 视频id
+        $userName = $request->param('userName',''); // 用户名
 
         // 查询条件
         $where = [];
@@ -51,6 +53,13 @@ class Star extends Base
         },'user' => function($query) {
             $query->field('id,nick_name');
         }])->where($where);
+
+        $where = AppletUser::where('nick_name','like','%'.$userName.'%');
+
+        if($userName !== '') {
+            $query->hasWhere('user',$where);
+        }
+
 
 
         $total = $query->count(); // 统计数量
