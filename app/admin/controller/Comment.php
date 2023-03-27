@@ -7,7 +7,7 @@ use app\validate\CommentValidate;
 use think\App;
 use app\model\Comment as CommentModel;
 use think\exception\ValidateException;
-use app\model\Article;
+use app\model\AppletUser;
 
 class Comment extends Base
 {
@@ -35,6 +35,7 @@ class Comment extends Base
         $keyword = $request->param('keyword', '');// 内容关键词
         $article = $request->param('article', ''); // 文章id
         $video = $request->param('video', ''); // 视频id
+        $userName = $request->param('userName',''); // 用户名
 
         // 查询条件
         $where = [];
@@ -55,6 +56,11 @@ class Comment extends Base
             $query->field('id,nick_name');
         }])->where($where);
 
+        $where = AppletUser::where('nick_name','like','%'.$userName.'%');
+
+        if($userName !== '') {
+            $query->hasWhere('user',$where);
+        }
 
         // 状态筛选
         if ($status !== '') {
