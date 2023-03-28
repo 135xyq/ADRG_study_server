@@ -5,13 +5,16 @@ namespace app\applet\controller;
 use app\common\BaseServer;
 use app\model\AppletConfig;
 use app\model\AppletUser;;
+
+use think\facade\Cache;
 use think\Request;
 
 class Login extends BaseServer
 {
 
-    public function index(Request $request)
+    public function login(Request $request)
     {
+
         // 获取前端传回的code
         $code = $request->param('code');
         $nickName = $request->param('nickName');
@@ -19,7 +22,9 @@ class Login extends BaseServer
         $gender = $request->param('gender');
 
         // 获取小程序的配置信息 APPID和secret
-        $res = AppletConfig::find(1);
+        $config = AppletConfig::select();
+        $res = $config[0];
+
         $info=curl_init();
         $url = 'https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code';
         $url = sprintf($url,$res->appid,$res->secret,$code);
@@ -39,33 +44,88 @@ class Login extends BaseServer
         } else {
             // 处理响应数据
             $info = json_decode($output);//openid和sesion_key
+
+            $token = md5(uniqid("applet_user")); // 生成唯一的token
+
             $isExist = AppletUser::where('openid',$info->openid)->find();
             // openid已存在证明不是新用户
             if($isExist != null){
                 $user = AppletUser::where('openid',$info->openid)
                     ->field('id,nick_name as nickName,gender,avatar,create_time,update_time')->find();
+
                 $user->new = 1;//是否为新用户，1 为新 0为老
-                $this->result = $user;
-                return $this->success();
+
+                Cache::set($token,json_encode($user,JSON_UNESCAPED_UNICODE)); // 将用户登录信息存到缓存中
+
+                return $this->success('登录成功！',$user);
             }else{
+
+                $find = 1;
+                $userName = $nickName;
+                while(!empty($find)) {
+                    // 新用户随机生成用户名
+                    $userName = $this->str_shuffle();
+                    // 防止有重复的昵称
+                    $find = AppletUser::where('nick_name','=',$userName)->count();
+                }
+
                 $user = AppletUser::create([
                     'openid' => $info->openid,
                     'session_key' => $info->session_key,
-                    'nick_name' => $nickName,
+                    'nick_name' => $userName,
                     'avatar' => $avatarUrl,
                     'gender' => $gender
                 ]);
-                $this->result = [
-                    'id' => $user->$user->id,
+
+                Cache::set($token,json_encode($user,JSON_UNESCAPED_UNICODE)); // 将用户登录信息存到缓存中
+
+                $data = [
+                    'id' => $user->id,
                     'nickName' => $user->nick_name,
                     'gender' => $user->gender,
                     'avatar' => $user->avatar,
                     'create_time' => $user->create_time,
                     'update_time' => $user->update_time
                 ];
-                return $this->success();
+                return $this->success('登陆成功！',$data);
             }
         }
-
     }
+
+
+    /**
+     * 退出登录
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function logout(Request $request) {
+        $token = $request->param('token');
+
+        if(empty($token)){
+            return $this->error("请输入token");
+        }
+        Cache::delete('token');
+
+        return $this->success("退出登录成功");
+    }
+
+
+
+    /**
+     * 生成随机用户名
+     * @return str
+     */
+    public function str_shuffle()
+    {
+        $chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $charsLength = bcsub(strlen($chars), 1);
+        $username = "";
+        for ( $i = 0; $i < 6; $i++ )
+        {
+            $username .= $chars[mt_rand(0, $charsLength)];
+        }
+        // 打乱顺序
+        return 'ADRG_Study_'.str_shuffle($username.str_shuffle(time()));
+    }
+
 }
