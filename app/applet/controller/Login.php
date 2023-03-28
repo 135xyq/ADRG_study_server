@@ -50,6 +50,7 @@ class Login extends BaseServer
             $isExist = AppletUser::where('openid',$info->openid)->find();
             // openid已存在证明不是新用户
             if($isExist != null){
+
                 $user = AppletUser::where('openid',$info->openid)
                     ->field('id,nick_name as nickName,gender,avatar,create_time,update_time')->find();
 
@@ -57,7 +58,11 @@ class Login extends BaseServer
 
                 Cache::set($token,json_encode($user,JSON_UNESCAPED_UNICODE)); // 将用户登录信息存到缓存中
 
-                return $this->success('登录成功！',$user);
+                $data = [
+                    'token' => $token
+                ];
+
+                return $this->success('登录成功！',$data);
             }else{
 
                 $find = 1;
@@ -80,12 +85,7 @@ class Login extends BaseServer
                 Cache::set($token,json_encode($user,JSON_UNESCAPED_UNICODE)); // 将用户登录信息存到缓存中
 
                 $data = [
-                    'id' => $user->id,
-                    'nickName' => $user->nick_name,
-                    'gender' => $user->gender,
-                    'avatar' => $user->avatar,
-                    'create_time' => $user->create_time,
-                    'update_time' => $user->update_time
+                    'token' => $token
                 ];
                 return $this->success('登陆成功！',$data);
             }
