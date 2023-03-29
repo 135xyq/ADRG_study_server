@@ -52,7 +52,7 @@ class Login extends BaseServer
             if($isExist != null){
 
                 $user = AppletUser::where('openid',$info->openid)
-                    ->field('id,nick_name as nickName,gender,avatar,create_time,update_time')->find();
+                    ->field('id,nick_name as nickName,gender,avatar,question_count,create_time,update_time')->find();
 
                 $user->new = 1;//是否为新用户，1 为新 0为老
 
