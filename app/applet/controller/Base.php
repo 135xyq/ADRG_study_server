@@ -12,7 +12,7 @@ class Base extends BaseController
 {
     protected $baseServer;
     protected $token;
-
+    protected $userInfo;
     public function __construct(App $app)
     {
         parent::__construct($app);
@@ -52,10 +52,15 @@ class Base extends BaseController
             abort(403,'token不存在');
         }
 
-        $userInfo = Cache::get($token);
-        if(empty($userInfo)){
+        $this->userInfo = Cache::get($token);
+        if(empty($this->userInfo)){
             abort(403,'token不存在');
         }
+
+        if(!is_array($this->userInfo)){
+            $this->userInfo = json_decode($this->userInfo,true);
+        }
+
 
         $this->token = $token;
     }

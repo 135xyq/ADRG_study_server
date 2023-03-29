@@ -5,12 +5,14 @@ namespace app\applet\controller;
 use app\common\BaseServer;
 use app\Request;
 use app\model\Video as VideoModel;
+use think\App;
 
-class Video extends BaseServer
+class Video extends Base
 {
     private $video;
-    public function __construct()
+    public function __construct(App $app)
     {
+        parent::__construct($app);
         $this->video = new VideoModel();
     }
 
