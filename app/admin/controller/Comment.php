@@ -103,7 +103,7 @@ class Comment extends Base
                 'status' => $status
             ]);
         } catch (ValidateException $e) {
-            return $this->error('fail', $e->getError());
+            return $this->error($e->getError());
         }
 
         $comment = $this->comment->find($id);
