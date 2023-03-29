@@ -47,7 +47,7 @@ class StudyCategory extends Base
         // 统计数量
         $count = $query->count();
 
-        $res = $query->field($field)->page($page, $limit)->select();
+        $res = $query->field($field)->order('sort','desc')->page($page, $limit)->select();
 
         $result = [
             'total' => $count,
