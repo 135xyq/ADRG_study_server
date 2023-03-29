@@ -7,12 +7,13 @@ use app\Request;
 use think\App;
 use app\model\StudyCategory as StudyCategoryModel;
 
-class StudyCategory extends BaseServer
+class StudyCategory extends Base
 {
     private $category;
 
-    public function __construct()
+    public function __construct(App $app)
     {
+        parent::__construct($app);
         $this->category = new StudyCategoryModel();
     }
 

@@ -5,11 +5,14 @@ namespace app\applet\controller;
 use app\common\BaseServer;
 use app\Request;
 use app\model\Article as ArticleModel;
+use think\App;
 
-class Article extends BaseServer
+class Article extends Base
 {
     private $article;
-    public function __construct() {
+    public function __construct(App $app)
+    {
+        parent::__construct($app);
         $this->article = new ArticleModel();
     }
 

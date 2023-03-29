@@ -9,6 +9,6 @@ class AppletUser extends Base
 {
     public function getUserInfo(Request $request) {
         $userInfo = Cache::get($this->token);
-        return $this->success('success',$userInfo);
+        return $this->success('success',json_decode($userInfo));
     }
 }

@@ -117,15 +117,15 @@ class Login extends BaseServer
      */
     public function str_shuffle()
     {
-        $chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         $charsLength = bcsub(strlen($chars), 1);
         $username = "";
-        for ( $i = 0; $i < 6; $i++ )
+        for ( $i = 0; $i < 10; $i++ )
         {
             $username .= $chars[mt_rand(0, $charsLength)];
         }
         // 打乱顺序
-        return 'ADRG_Study_'.str_shuffle($username.str_shuffle(time()));
+        return 'ADRG_Study_'.str_shuffle($username);
     }
 
 }

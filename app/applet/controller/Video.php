@@ -9,7 +9,8 @@ use app\model\Video as VideoModel;
 class Video extends BaseServer
 {
     private $video;
-    public function __construct() {
+    public function __construct()
+    {
         $this->video = new VideoModel();
     }
 
