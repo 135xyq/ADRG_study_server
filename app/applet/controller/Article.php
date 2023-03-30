@@ -65,4 +65,28 @@ class Article extends Base
         $data = ['total'=>$total,'data'=>$res];
         return $this->success('success',$data);
     }
+
+    /**
+     * 获取文章详情
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function detail(Request $request) {
+        $articleId = $request->param('id'); // 文章id
+
+        if(empty($articleId)) {
+            return $this->error('选择文章不能为空！');
+        }
+
+        $res = $this->article->find($articleId);
+
+        if(empty($res)) {
+            return $this->error('文章不存在！');
+        }else{
+            return $this->success('success',$res);
+        }
+    }
 }
