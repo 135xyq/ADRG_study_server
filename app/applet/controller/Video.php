@@ -66,4 +66,22 @@ class Video extends Base
         $data = ['total'=>$total,'data'=>$res];
         return $this->success('success',$data);
     }
+
+
+    public function detail(Request $request)
+    {
+        $videoId = $request->param('id');
+
+        if(empty($videoId)) {
+            return $this->error('选择视频不能为空！');
+        }
+
+        $res = $this->video->find($videoId);
+
+        if(empty($res)) {
+            return $this->error('视频不存在！');
+        }else{
+            return $this->success('success',$res);
+        }
+    }
 }
