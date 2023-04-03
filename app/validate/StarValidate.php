@@ -18,7 +18,7 @@ class StarValidate extends Validate
     ];
 
     protected $scene =[
-        'add' => ['applet_user'],
+        'add' => ['applet_user_id'],
         'delete' => ['id'],
     ];
 }

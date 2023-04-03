@@ -68,4 +68,48 @@ class Star extends Base
         }
 
     }
+
+
+    /**
+     * 用户收藏
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DbException
+     */
+    public function star(Request $request) {
+        $videoId = $request->param('videoId');
+        $articleId = $request->param('articleId');
+
+        // 设置用户信息
+        $applet_user_id = $this->userId;
+
+        if (empty($articleId) && empty($videoId)) {
+            return $this->error('请选择收藏的对象！');
+        }
+
+        // 判断文章是否已经收藏过
+        if(!empty($articleId)) {
+            $count = $this->star->where('applet_user_id','=',$applet_user_id)->where('article_id','=',$articleId)->count();
+            if($count) {
+                return $this->success('文章已收藏！');
+            }
+        }
+
+        // 判断视频是否已经收藏过
+        if(!empty($videoId)) {
+            $count = $this->star->where('applet_user_id','=',$applet_user_id)->where('video_id','=',$videoId)->count();
+            if($count) {
+                return $this->success('视频已收藏！');
+            }
+        }
+
+        StarModel::create([
+            'applet_user_id' => $applet_user_id,
+            'video_id' => $videoId,
+            'article_id' => $articleId
+        ]);
+
+        return $this->success('收藏成功！');
+    }
+
 }
