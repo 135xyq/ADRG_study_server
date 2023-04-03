@@ -71,12 +71,12 @@ class Like extends Base
 
 
     /**
-     * 用户收藏
+     * 用户点赞
      * @param Request $request
      * @return \think\response\Json
      * @throws \think\db\exception\DbException
      */
-    public function star(Request $request) {
+    public function like(Request $request) {
         $videoId = $request->param('videoId');
         $articleId = $request->param('articleId');
 
@@ -84,36 +84,36 @@ class Like extends Base
         $applet_user_id = $this->userId;
 
         if (empty($articleId) && empty($videoId)) {
-            return $this->error('请选择收藏的对象！');
+            return $this->error('请选择点赞的对象！');
         }
 
-        // 判断文章是否已经收藏过
+        // 判断文章是否已经点赞过
         if(!empty($articleId)) {
-            $count = $this->star->where('applet_user_id','=',$applet_user_id)->where('article_id','=',$articleId)->count();
+            $count = $this->like->where('applet_user_id','=',$applet_user_id)->where('article_id','=',$articleId)->count();
             if($count) {
-                return $this->success('文章已收藏！');
+                return $this->success('文章已点赞！');
             }
         }
 
-        // 判断视频是否已经收藏过
+        // 判断视频是否已经点赞过
         if(!empty($videoId)) {
-            $count = $this->star->where('applet_user_id','=',$applet_user_id)->where('video_id','=',$videoId)->count();
+            $count = $this->like->where('applet_user_id','=',$applet_user_id)->where('video_id','=',$videoId)->count();
             if($count) {
-                return $this->success('视频已收藏！');
+                return $this->success('视频已点赞！');
             }
         }
 
-        StarModel::create([
+        LikeModel::create([
             'applet_user_id' => $applet_user_id,
             'video_id' => $videoId,
             'article_id' => $articleId
         ]);
 
-        return $this->success('收藏成功！');
+        return $this->success('点赞成功！');
     }
 
     /**
-     * 取消收藏
+     * 取消点赞
      * @param Request $request
      * @return \think\response\Json
      */
