@@ -19,6 +19,14 @@ class Star extends Base
         $this->userId = $this->userInfo['id'];
     }
 
+    /**
+     * 收藏分页获取
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function page(Request $request)
     {
         $page = $request->param('page', 1, 'intval');
@@ -47,7 +55,7 @@ class Star extends Base
 
             // 统计数据
             $total = $query->count();
-            $res = $query->select();
+            $res = $query->page($page,$limit)->select();
 
             $data = [
                 'total' => $total,
