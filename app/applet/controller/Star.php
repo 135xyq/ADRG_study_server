@@ -118,15 +118,33 @@ class Star extends Base
      * @return \think\response\Json
      */
     public function cancelStar(Request $request) {
-        $id = $request->param('id');
+        $videoId = $request->param('videoId');
+        $articleId = $request->param('articleId');
 
-        if(empty($id)) {
-            return $this->error('请选择取消收藏的对象');
+        $applet_user_id = $this->userId;
+
+        // 不能同时为空
+        if (empty($articleId) && empty($videoId)) {
+            return $this->error('出错了');
         }
 
-        StarModel::destroy($id);
+        if(!empty($articleId)) {
+            $data = $this->star->where('applet_user_id','=',$applet_user_id)->where('article_id','=',$articleId)->find();
+            if(!empty($data)) {
+                $data->delete();
+                return $this->success('取消收藏成功');
+            }
+        }
 
-        return $this->success('取消收藏成功');
+        if(!empty($videoId)) {
+            $data = $this->star->where('applet_user_id','=',$applet_user_id)->where('video_id','=',$videoId)->find();
+            if(!empty($data)) {
+                $data->delete();
+                return $this->success('取消收藏成功');
+            }
+        }
+
+        return $this->error('取消收藏失败');
     }
 
     /**
