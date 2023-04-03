@@ -13,6 +13,7 @@ class Comment extends Base
 
     protected $comment;
     protected $userId;
+
     public function __construct(App $app)
     {
         parent::__construct($app);
@@ -28,39 +29,42 @@ class Comment extends Base
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function page(Request $request) {
+    public function page(Request $request)
+    {
         $page = $request->param('page', 1, 'intval');
         $limit = $request->param('limit', 20, 'intval');
-        $videoId = $request->param('videoId',''); // 视频的id如果要获取视频的评论
-        $articleId = $request->param('articleId',''); // 文章的id，如果要获取文章的评论
+        $videoId = $request->param('videoId', ''); // 视频的id如果要获取视频的评论
+        $articleId = $request->param('articleId', ''); // 文章的id，如果要获取文章的评论
 
-        $query = null;
+        $query = $this->comment->with(['user' => function ($q) {
+            $q->field(['id', 'avatar', 'nick_name']);
+        }]);
 
-        if($articleId !== '') {
-            $query = $this->comment->hasWhere('article',['id'=>$articleId]);
+        if ($articleId !== '') {
+            $query->hasWhere('article', ['id' => $articleId]);
         }
 
         // 没有选择文章或视频
-        if($videoId !== '') {
-            $query = $this->comment->hasWhere('video',['id'=>$videoId]);
+        if ($videoId !== '') {
+            $query->hasWhere('video', ['id' => $videoId]);
         }
 
-        if(empty($query)) {
+        if (empty($query)) {
             return $this->error('请选择文章或视频！');
         }
 
-        // 筛选出审核通过且不是子评论的评论
-        $query->where('comment.status','=',1);
+        // 筛选出审核通过的评论
+        $query->where('comment.status', '=', 1);
 
         $total = $query->count();
-        $res = $query->select();
+        $res = $query->page($page, $limit)->select();
 
         $data = [
             'total' => $total,
             'data' => $res
         ];
 
-        return $this->success('success',$data);
+        return $this->success('success', $data);
     }
 
     /**
@@ -68,7 +72,8 @@ class Comment extends Base
      * @param Request $request
      * @return \think\response\Json
      */
-    public function publishComment(Request $request) {
+    public function publishComment(Request $request)
+    {
         $content = $request->param('content');
         $videoId = $request->param('videoId');
         $articleId = $request->param('articleId');
@@ -77,7 +82,7 @@ class Comment extends Base
         $applet_user_id = $this->userId;
         $status = 0;
 
-        if(empty($articleId) && empty($videoId)) {
+        if (empty($articleId) && empty($videoId)) {
             return $this->error('请选择评论的对象！');
         }
 
@@ -87,7 +92,7 @@ class Comment extends Base
                 'applet_user_id' => $applet_user_id,
                 'status' => $status
             ]);
-        }catch (ValidateException $e){
+        } catch (ValidateException $e) {
             return $this->error('评论内容不能为空！');
         }
 
@@ -110,30 +115,31 @@ class Comment extends Base
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function deleteComment(Request $request) {
+    public function deleteComment(Request $request)
+    {
         $id = $request->param('id');
 
-        if(empty($id)) {
+        if (empty($id)) {
             return $this->error('请选择要删除的评论');
         }
 
         $comment = $this->comment->find($id);
 
         // 评论是否存在
-        if(empty($comment)) {
+        if (empty($comment)) {
             return $this->error('要删除的评论不存在!');
         }
 
         // 权限验证
-        if($comment['applet_user_id'] != $this->userId) {
+        if ($comment['applet_user_id'] != $this->userId) {
             return $this->error('无权删除别人的评论');
         }
 
         $bool = $comment->delete();
 
-        if($bool) {
+        if ($bool) {
             return $this->success('删除成功！');
-        }else{
+        } else {
             return $this->error('删除失败！');
         }
     }
