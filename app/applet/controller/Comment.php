@@ -101,4 +101,40 @@ class Comment extends Base
 
         return $this->success('评论成功');
     }
+
+    /**
+     * 用户删除评论
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function deleteComment(Request $request) {
+        $id = $request->param('id');
+
+        if(empty($id)) {
+            return $this->error('请选择要删除的评论');
+        }
+
+        $comment = $this->comment->find($id);
+
+        // 评论是否存在
+        if(empty($comment)) {
+            return $this->error('要删除的评论不存在!');
+        }
+
+        // 权限验证
+        if($comment['applet_user_id'] != $this->userId) {
+            return $this->error('无权删除别人的评论');
+        }
+
+        $bool = $comment->delete();
+
+        if($bool) {
+            return $this->success('删除成功！');
+        }else{
+            return $this->error('删除失败！');
+        }
+    }
 }
