@@ -117,19 +117,24 @@ class Like extends Base
      * @param Request $request
      * @return \think\response\Json
      */
-    public function cancelStar(Request $request) {
+    public function cancelLike(Request $request) {
         $id = $request->param('id');
 
         if(empty($id)) {
-            return $this->error('请选择取消收藏的对象');
+            return $this->error('请选择取消点赞的对象');
         }
 
-        StarModel::destroy($id);
+        LikeModel::destroy($id);
 
-        return $this->success('取消收藏成功');
+        return $this->success('取消点赞成功');
     }
 
-    public function isStar(Request $request) {
+    /**
+     * 判断是否点赞
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function isLike(Request $request) {
         $videoId = $request->param('videoId');
         $articleId = $request->param('articleId');
 
@@ -143,21 +148,21 @@ class Like extends Base
 
         // 判断文章是否已经收藏过
         if(!empty($articleId)) {
-            $count = $this->star->where('applet_user_id','=',$applet_user_id)->where('article_id','=',$articleId)->count();
+            $count = $this->like->where('applet_user_id','=',$applet_user_id)->where('article_id','=',$articleId)->count();
             if($count) {
-                return $this->success('文章已收藏！',['result'=>true]);
+                return $this->success('文章已点赞！',['result'=>true]);
             }
         }
 
-        // 判断视频是否已经收藏过
+        // 判断视频是否已经点赞过
         if(!empty($videoId)) {
-            $count = $this->star->where('applet_user_id','=',$applet_user_id)->where('video_id','=',$videoId)->count();
+            $count = $this->like->where('applet_user_id','=',$applet_user_id)->where('video_id','=',$videoId)->count();
             if($count) {
-                return $this->success('视频已收藏！',['result'=>true]);
+                return $this->success('视频已点赞！',['result'=>true]);
             }
         }
 
 
-        return $this->success('未收藏',['result'=>false]);
+        return $this->success('未点赞',['result'=>false]);
     }
 }

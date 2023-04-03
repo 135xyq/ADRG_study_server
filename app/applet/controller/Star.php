@@ -129,6 +129,12 @@ class Star extends Base
         return $this->success('取消收藏成功');
     }
 
+    /**
+     * 判断是否收藏
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DbException
+     */
     public function isStar(Request $request) {
         $videoId = $request->param('videoId');
         $articleId = $request->param('articleId');
