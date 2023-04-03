@@ -128,4 +128,36 @@ class Star extends Base
 
         return $this->success('取消收藏成功');
     }
+
+    public function isStar(Request $request) {
+        $videoId = $request->param('videoId');
+        $articleId = $request->param('articleId');
+
+        // 设置用户信息
+        $applet_user_id = $this->userId;
+
+        // 不能同时为空
+        if (empty($articleId) && empty($videoId)) {
+            return $this->error('出错了');
+        }
+
+        // 判断文章是否已经收藏过
+        if(!empty($articleId)) {
+            $count = $this->star->where('applet_user_id','=',$applet_user_id)->where('article_id','=',$articleId)->count();
+            if($count) {
+                return $this->success('文章已收藏！',['result'=>true]);
+            }
+        }
+
+        // 判断视频是否已经收藏过
+        if(!empty($videoId)) {
+            $count = $this->star->where('applet_user_id','=',$applet_user_id)->where('video_id','=',$videoId)->count();
+            if($count) {
+                return $this->success('视频已收藏！',['result'=>true]);
+            }
+        }
+
+
+        return $this->success('未收藏',['result'=>false]);
+    }
 }
