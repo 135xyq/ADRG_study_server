@@ -26,16 +26,10 @@ class Comment extends Model
         return $this->belongsTo(Article::class);
     }
 
-    // 获取评论的父评论信息
-    public function parentComment()
+    // 关联评论回复表
+    public function response()
     {
-        return $this->belongsTo(Comment::class, 'parent_id');
-    }
-
-    // 获取评论的子评论信息
-    public function childComments()
-    {
-        return $this->hasMany(Comment::class, 'parent_id');
+        return $this->hasMany(CommentResponse::class);
     }
 
     /**

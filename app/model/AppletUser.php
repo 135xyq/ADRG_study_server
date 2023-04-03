@@ -13,4 +13,10 @@ class AppletUser extends Model
     public function feedback() {
         return $this->hasMany(Feedback::class);
     }
+
+    // 关联评论回复表
+    public function response()
+    {
+        return $this->hasMany(CommentResponse::class);
+    }
 }
