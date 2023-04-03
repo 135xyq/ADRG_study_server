@@ -112,4 +112,20 @@ class Star extends Base
         return $this->success('收藏成功！');
     }
 
+    /**
+     * 取消收藏
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function cancelStar(Request $request) {
+        $id = $request->param('id');
+
+        if(empty($id)) {
+            return $this->error('请选择取消收藏的对象');
+        }
+
+        StarModel::destroy($id);
+
+        return $this->success('取消收藏成功');
+    }
 }
