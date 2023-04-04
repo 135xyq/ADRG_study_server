@@ -68,6 +68,14 @@ class Video extends Base
     }
 
 
+    /**
+     * 获取视频详情
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function detail(Request $request)
     {
         $videoId = $request->param('id');
@@ -81,6 +89,10 @@ class Video extends Base
         if(empty($res)) {
             return $this->error('视频不存在！');
         }else{
+            // 视频的阅读量加一
+            $res->view_count += 1;
+            $res->save();
+
             return $this->success('success',$res);
         }
     }

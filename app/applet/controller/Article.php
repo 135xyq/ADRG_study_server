@@ -86,6 +86,10 @@ class Article extends Base
         if(empty($res)) {
             return $this->error('文章不存在！');
         }else{
+            // 文章的阅读量加一
+            $res->view_count += 1;
+            $res->save();
+
             return $this->success('success',$res);
         }
     }
