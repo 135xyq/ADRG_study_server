@@ -44,13 +44,20 @@ class Video extends Model
         $commentCount = Comment::where('video_id', $this->id)->count();
 
         // 统计点赞数
-        $likeCount = Like::where('article_id', $this->id)->count();
+        $likeCount = Like::where('video_id', $this->id)->count();
 
-        // 更新文章表中评论数量
+        // 统计收藏数
+        $starCount = Star::where('video_id', $this->id)->count();
+
+        // 更新视频表中评论数量
         $this->comment_count = $commentCount;
 
-        // 更新文章表中点赞数量
+        // 更新视频表中点赞数量
         $this->like_count = $likeCount;
+
+        // 更新视频表中点赞数量
+        $this->star_count = $starCount;
+
         $this->save();
     }
 

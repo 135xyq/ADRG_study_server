@@ -48,11 +48,18 @@ class Article extends Model
         // 统计点赞数
         $likeCount = Like::where('article_id', $this->id)->count();
 
+        // 统计收藏数
+        $starCount = Star::where('article_id', $this->id)->count();
+
         // 更新文章表中的评论字段
         $this->comment_count = $commentCount;
 
         // 更新文章表中的点赞字段
         $this->like_count = $likeCount;
+
+        // 更新文章表中的收藏字段
+        $this->star_count = $starCount;
+
         $this->save();
     }
 

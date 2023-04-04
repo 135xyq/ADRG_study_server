@@ -50,7 +50,7 @@ class Star extends Model
 
     /**
      * 监听收藏新增，统计收藏数量
-     * @param $like
+     * @param $star
      * @return void
      */
     public static function onAfterInsert($star)
