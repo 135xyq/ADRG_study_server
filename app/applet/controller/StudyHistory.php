@@ -38,7 +38,7 @@ class StudyHistory extends Base
             validate(StudyHistoryValidate::class)->scene('page')->check([
                 'type' => $type
             ]);
-        }catch (ValidateException $e) {
+        } catch (ValidateException $e) {
             return $this->error($e->getError());
         }
 
@@ -73,5 +73,49 @@ class StudyHistory extends Base
         } else {
             return $this->error('请选择学习记录的类型！');
         }
+    }
+
+    public function newStudyHistory(Request $request)
+    {
+        $type = $request->param('type', 0, 'intval');
+        $id = $request->param('id', '');
+
+        try {
+            validate(StudyHistoryValidate::class)->scene('add')->check([
+                'type' => $type
+            ]);
+        } catch (ValidateException $e) {
+            return $this->error($e->getError());
+        }
+
+        if ($id === '') {
+            return $this->error('出错了！');
+        }
+
+        $data = null; // 存放是哪一种资源
+
+        if ($type == 1) {
+            $data = 'video_id';
+        } else if ($type == 2) {
+            $data = 'article_id';
+        } else if ($type == 3) {
+            $data = 'blog_id';
+        }
+
+        $find = $this->studyHistory->hasWhere('user', ['id' => $this->userId])->where($data, '=', $id)->count();
+
+        //  记录不存在则创建
+        if (empty($find)) {
+            $newData = [
+                'applet_user_id' => $this->userId,
+                'type' => $type,
+                $data => $id
+            ];
+
+            StudyHistoryModel::create($newData);
+            return $this->success();
+        }
+        return $this->success();
+
     }
 }
