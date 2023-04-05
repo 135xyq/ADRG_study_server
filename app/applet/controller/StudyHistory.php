@@ -58,6 +58,8 @@ class StudyHistory extends Base
                 }])->hasWhere('user', ['id' => $this->userId])
                     ->hasWhere('video', ['status' => 1])
                     ->where('video_id', 'not null');
+            } else {
+                return $this->success('success', []);
             }
 
             // 统计数据
@@ -79,7 +81,7 @@ class StudyHistory extends Base
     {
         $type = $request->param('type', 0, 'intval');
         $id = $request->param('id', '');
-        $time = $request->param('time',0,'intval');
+        $time = $request->param('time', 0, 'intval');
 
         try {
             validate(StudyHistoryValidate::class)->scene('add')->check([
@@ -117,7 +119,7 @@ class StudyHistory extends Base
 
             StudyHistoryModel::create($newData);
             return $this->success();
-        }else{
+        } else {
             //  记录存在则更新
             $find->total_count += 1;
             $find->total_time += $time;
