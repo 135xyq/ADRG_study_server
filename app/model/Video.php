@@ -22,7 +22,7 @@ class Video extends Model
     }
 
     /**
-     * 监听视频删除事件，删除之前先删除评论、收藏、点赞
+     * 监听视频删除事件，删除之前先删除评论、收藏、点赞、学习记录
      * @param $article
      * @return mixed|void
      */
@@ -31,6 +31,7 @@ class Video extends Model
         Comment::where('video_id',$video->id)->select()->delete();
         Like::where('video_id',$video->id)->select()->delete();
         Star::where('video_id',$video->id)->select()->delete();
+        StudyHistory::where('video_id',$video->id)->select()->delete();
     }
 
     /**
