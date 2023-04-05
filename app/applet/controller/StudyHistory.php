@@ -61,7 +61,7 @@ class StudyHistory extends Base
             }
 
             // 统计数据
-            $total = $query->count();
+            $total = $query->count(); // 统计数量
             $res = $query->page($page, $limit)->select();
 
             $data = [
@@ -79,6 +79,7 @@ class StudyHistory extends Base
     {
         $type = $request->param('type', 0, 'intval');
         $id = $request->param('id', '');
+        $time = $request->param('time',0,'intval');
 
         try {
             validate(StudyHistoryValidate::class)->scene('add')->check([
@@ -102,20 +103,26 @@ class StudyHistory extends Base
             $data = 'blog_id';
         }
 
-        $find = $this->studyHistory->hasWhere('user', ['id' => $this->userId])->where($data, '=', $id)->count();
+        $find = $this->studyHistory->hasWhere('user', ['id' => $this->userId])->where($data, '=', $id)->find();
 
         //  记录不存在则创建
         if (empty($find)) {
             $newData = [
                 'applet_user_id' => $this->userId,
                 'type' => $type,
-                $data => $id
+                $data => $id,
+                'total_time' => $time,
+                'total_count' => 1
             ];
 
             StudyHistoryModel::create($newData);
             return $this->success();
+        }else{
+            //  记录存在则更新
+            $find->total_count += 1;
+            $find->total_time += $time;
+            $find->save();
+            return $this->success();
         }
-        return $this->success();
-
     }
 }
