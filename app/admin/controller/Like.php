@@ -46,6 +46,9 @@ class Like extends Base
             $where['video_id'] = $video;
         }
 
+        // 用户名检索
+        $where1 = AppletUser::where('nick_name','like','%'.$userName.'%');
+
         // 筛选基本条件
         $query = $this->like->with(['video' => function ($query) {
             $query->field('id,title');
@@ -53,14 +56,8 @@ class Like extends Base
             $query->field('id,title');
         },'user' => function($query) {
             $query->field('id,nick_name');
-        }])->where($where);
+        }])->hasWhere('user',$where1)->where($where);
 
-
-        $where = AppletUser::where('nick_name','like','%'.$userName.'%');
-
-        if($userName !== '') {
-            $query->hasWhere('user',$where);
-        }
 
 
         $total = $query->count(); // 统计数量
