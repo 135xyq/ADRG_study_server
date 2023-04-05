@@ -36,6 +36,7 @@ class StudyHistory extends Base
         $video = $request->param('video', ''); // 视频id
         $userName = $request->param('userName', ''); // 用户名
         $type = $request->param('type', ''); // 种类
+        $sort = $request->param('sort',''); // 排序方式
 
         // 查询条件
         $where = [];
@@ -64,8 +65,13 @@ class StudyHistory extends Base
         }])->hasWhere('user', $where1)->where($where);
 
 
-        $total = $query->count(); // 统计数量
-        $res = $query->page($page, $limit)->select();
+        $total = $query->count();
+        if($sort !== '') {
+            // 排序方式
+            $res = $query->order($sort,'desc')->page($page, $limit)->select();
+        }else{
+            $res = $query->page($page, $limit)->select();
+        }
 
         $data = [
             'total' => $total,
