@@ -19,6 +19,7 @@ class StudyHistoryValidate extends Validate
 
     protected $scene = [
         'add' => ['type'],
+        'page' => ['type'],
         'delete' => ['id'],
     ];
 }
