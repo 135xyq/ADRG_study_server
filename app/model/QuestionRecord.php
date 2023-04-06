@@ -11,12 +11,12 @@ class QuestionRecord extends Model
 
     // 关联题目记录表
     public function questionHistoryRecord() {
-        $this->hasMany(QuestionHistoryRecord::class);
+        return $this->hasMany(QuestionHistoryRecord::class);
     }
 
     // 关联用户表
     public function user() {
-        $this->belongsTo(AppletUser::class);
+        return $this->belongsTo(AppletUser::class);
     }
 
     // 关联题目分类表
