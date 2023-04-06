@@ -21,6 +21,12 @@ class Question extends Model
     {
         return $this->belongsTo(QuestionCategory::class);
     }
+    // 关联题目记录表
+    public function questionHistoryRecord()
+    {
+        return $this->hasMany(QuestionHistoryRecord::class);
+    }
+
     /**
      * 监听题目删除，统计分类的题目数量
      * @param $question
