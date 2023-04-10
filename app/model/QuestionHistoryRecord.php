@@ -8,7 +8,8 @@ use think\model\concern\SoftDelete;
 class QuestionHistoryRecord extends Model
 {
     use SoftDelete;
-    protected $filed = ['id','type','title','level','options','question_category_id','status'];
+
+    protected $filed = ['id', 'type', 'title', 'level', 'options', 'question_category_id', 'status'];
 
     // 确定答案的格式，便于输出
     protected $type = [
@@ -25,6 +26,28 @@ class QuestionHistoryRecord extends Model
     public function question()
     {
         return $this->belongsTo(Question::class);
+    }
+
+    /**
+     * 获取用户已做题的个数
+     * @param $user
+     * @param $category
+     * @return int
+     * @throws \think\db\exception\DbException
+     */
+    public function getUserDoneQuestionCount($user, $category)
+    {
+        // 获取记录表中的那些已经提交的错题
+        $where = (new QuestionRecord)->where('applet_user_id', '=', $user)
+            ->where('is_submit', '=', 1)
+            ->where('question_category_id','=',$category);
+
+
+        // 要去重
+        $data =  $this->hasWhere('questionRecord', $where)->column('question_id');
+
+        // 去重后的刷题数量
+        return count(array_unique($data));
     }
 
     /**
@@ -51,7 +74,7 @@ class QuestionHistoryRecord extends Model
             ->where('is_current', '=', 0)
             ->column('question_id');
 
-        $data = (new Question)->whereIn('id', $ids)->where('status','=',1)->field($this->filed);
+        $data = (new Question)->whereIn('id', $ids)->where('status', '=', 1)->field($this->filed);
         return $data;
     }
 
@@ -79,7 +102,7 @@ class QuestionHistoryRecord extends Model
         }
 
         // 获取没有做过的题目
-        $data = (new Question)->whereNotIn('id', $doneIds)->where($questionWhere)->where('status','=',1)->field($this->filed);
+        $data = (new Question)->whereNotIn('id', $doneIds)->where($questionWhere)->where('status', '=', 1)->field($this->filed);
 
         return $data;
     }
@@ -101,7 +124,7 @@ class QuestionHistoryRecord extends Model
         }
 
         // 获取所有的题目
-        $data = (new Question)->where($questionWhere)->where('status','=',1)->field($this->filed);
+        $data = (new Question)->where($questionWhere)->where('status', '=', 1)->field($this->filed);
 
         return $data;
     }

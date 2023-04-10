@@ -23,4 +23,5 @@ class QuestionRecord extends Model
     public function questionCategory() {
         return $this->belongsTo(QuestionCategory::class);
     }
+
 }

@@ -25,6 +25,14 @@ class Question extends Base
         $this->questionHistoryRecord = new QuestionHistoryRecordModel();
     }
 
+    /**
+     * 随机出题组卷
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function getRandomQuestions(Request $request) {
         // 获取用户详情
         $user = $this->appletUser->find($this->userId);
