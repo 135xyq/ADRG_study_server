@@ -29,7 +29,7 @@ class AppletUser extends Base
 
     public function edit(Request $request)
     {
-        $data = $request->only(['nick_name', 'avatar', 'gender', 'question_count']);
+        $data = $request->only(['nick_name', 'avatar', 'gender', 'question_count','question_type']);
 
         if (!empty($data['nick_name'])) {
             try {
