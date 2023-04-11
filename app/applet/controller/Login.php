@@ -6,6 +6,7 @@ use app\common\BaseServer;
 use app\model\AppletConfig;
 use app\model\AppletUser;;
 
+use app\model\AppletUserSet;
 use think\facade\Cache;
 use think\Request;
 
@@ -52,9 +53,10 @@ class Login extends BaseServer
             if($isExist != null){
 
                 $user = AppletUser::where('openid',$info->openid)
-                    ->field('id,nick_name,gender,avatar,question_count,create_time,update_time')->find();
+                    ->field('id,nick_name,gender,avatar,create_time,update_time')->find();
 
                 $user->new = 1;//是否为新用户，1 为新 0为老
+
 
                 Cache::set($token,json_encode($user,JSON_UNESCAPED_UNICODE)); // 将用户登录信息存到缓存中
 
@@ -80,6 +82,14 @@ class Login extends BaseServer
                     'nick_name' => $userName,
                     'avatar' => $avatarUrl,
                     'gender' => $gender
+                ]);
+
+                // 用户的默认配置
+                AppletUserSet::create([
+                    'applet_user_id' => $user->id,
+                    'question_count' => 10,
+                    'question_type' => 4,
+                    'level' => 4
                 ]);
 
                 Cache::set($token,json_encode($user,JSON_UNESCAPED_UNICODE)); // 将用户登录信息存到缓存中

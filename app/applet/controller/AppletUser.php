@@ -29,7 +29,7 @@ class AppletUser extends Base
 
     public function edit(Request $request)
     {
-        $data = $request->only(['nick_name', 'avatar', 'gender', 'question_count','question_type']);
+        $data = $request->only(['nick_name', 'avatar', 'gender']);
 
         if (!empty($data['nick_name'])) {
             try {
@@ -53,8 +53,10 @@ class AppletUser extends Base
         if (!empty($user)) {
             $user->save($data);
 
+            $field = ['id','nick_name','gender','avatar'];
+
             // 重新获取用户信息
-            $newUserInfo = $this->appletUser->find($this->userId);
+            $newUserInfo = $this->appletUser->field($field)->find($this->userId);
 
             // 重置token信息
             Cache::set($this->token, json_encode($newUserInfo, JSON_UNESCAPED_UNICODE));

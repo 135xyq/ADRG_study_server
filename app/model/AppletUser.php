@@ -19,4 +19,10 @@ class AppletUser extends Model
     {
         return $this->hasMany(CommentResponse::class);
     }
+
+    // 关联用户设置表
+    public function userSet()
+    {
+        return $this->hasOne(AppletUserSet::class);
+    }
 }
