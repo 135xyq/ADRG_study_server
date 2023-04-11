@@ -44,9 +44,9 @@ class AppletUserSet extends Base
      */
     public function editUserSet(Request $request)
     {
-        $question_type = $request->param('type', '', 'intval');
+        $question_type = $request->param('question_type', '', 'intval');
         $level = $request->param('level', '', 'intval');
-        $question_count = $request->param('count', '', 'intval');
+        $question_count = $request->param('question_count', '', 'intval');
 
         $data = [];
 
