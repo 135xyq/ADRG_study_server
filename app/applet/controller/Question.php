@@ -8,6 +8,7 @@ use think\App;
 use app\model\Question as QuestionModel;
 use app\model\AppletUser as AppletUserModel;
 use app\model\QuestionHistoryRecord as QuestionHistoryRecordModel;
+use app\model\AppletUserSet as AppletUserSetModel;
 
 class Question extends Base
 {
@@ -15,6 +16,7 @@ class Question extends Base
     protected $userId;
     protected $appletUser;
     protected $questionHistoryRecord;
+    protected $userSet;
 
     public function __construct(App $app)
     {
@@ -23,6 +25,7 @@ class Question extends Base
         $this->userId = $this->userInfo['id'];
         $this->appletUser = new AppletUserModel();
         $this->questionHistoryRecord = new QuestionHistoryRecordModel();
+        $this->userSet = new AppletUserSetModel();
     }
 
     /**
@@ -35,12 +38,15 @@ class Question extends Base
      */
     public function getRandomQuestions(Request $request) {
         // 获取用户详情
-        $user = $this->appletUser->find($this->userId);
+        $userSetInfo = $this->userSet->where('applet_user_id','=',$this->userId)->find();
 
-        $count = $user->question_count; // 出题数
-        $type = $user->question_type; // 出题的类型1：只出新题 2：只出错题 3：新题+错题 4：无限制
+        $count = $userSetInfo->question_count; // 出题数
+        $type = $userSetInfo->question_type; // 出题的类型1：只出新题 2：只出错题 3：新题+错题 4：无限制
+        $level = $userSetInfo->level; // 题目的难度
         $category = $request->param('category',''); // 题目的分类
-        $level = $request->param('level',''); // 题目的难度
+
+
+        $user = $this->userId;
 
         if($category === '') {
             return $this->error('请选择题目的分类');
@@ -48,6 +54,7 @@ class Question extends Base
 
 
         $data = null;
+
         // 随机出题 1：只出新题 2：只出错题 3：新题+错题 4：无限制
         if($type === 1) {
             $data = $this->questionHistoryRecord->getNewQuestion($user,$category,$level)->orderRaw('rand()')->limit($count)->select();

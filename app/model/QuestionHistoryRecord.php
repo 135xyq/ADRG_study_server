@@ -60,21 +60,19 @@ class QuestionHistoryRecord extends Model
     public function getErrorQuestion($user, $category, $level)
     {
         // 获取记录表中的那些已经提交的错题
-        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '=', '1');
+        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '=', '1')->where('question_category_id', '=', $category);
 
-        // 筛选题目的难度个分类
-        if ($level !== '') {
-            $questionWhere = Question::where('question_category_id', '=', $category)->where('level', '=', $level);
-        } else {
-            $questionWhere = Question::where('question_category_id', '=', $category);
-        }
 
         $ids = $this->hasWhere('questionRecord', $where)
-            ->hasWhere('question', $questionWhere)
             ->where('is_current', '=', 0)
             ->column('question_id');
 
-        $data = (new Question)->whereIn('id', $ids)->where('status', '=', 1)->field($this->filed);
+        // 3是不限制难度
+        if($level !== 3) {
+            $data = (new Question)->whereIn('id', $ids)->where('level','=',$level)->where('status', '=', 1)->field($this->filed);
+        }else{
+            $data = (new Question)->whereIn('id', $ids)->where('status', '=', 1)->field($this->filed);
+        }
         return $data;
     }
 
@@ -89,20 +87,18 @@ class QuestionHistoryRecord extends Model
     public function getNewQuestion($user, $category, $level)
     {
         // 获取记录表中的那些已经提交
-        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '=', '1');
+        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '=', '1')->where('question_category_id', '=', $category);
 
         // 获取用户已经做过的题目列表
         $doneIds = $this->hasWhere('questionRecord', $where)->column('question_id');
 
-        // 筛选题目的难度个分类
-        if ($level !== '') {
-            $questionWhere = Question::where('question_category_id', '=', $category)->where('level', '=', $level);
-        } else {
-            $questionWhere = Question::where('question_category_id', '=', $category);
-        }
-
         // 获取没有做过的题目
-        $data = (new Question)->whereNotIn('id', $doneIds)->where($questionWhere)->where('status', '=', 1)->field($this->filed);
+        // 3是不限制难度
+        if($level !== 3) {
+            $data = (new Question)->whereNotIn('id', $doneIds)->where('level','=',$level)->where('status', '=', 1)->field($this->filed);
+        }else{
+            $data = (new Question)->whereNotIn('id', $doneIds)->where('status', '=', 1)->field($this->filed);
+        }
 
         return $data;
     }
@@ -115,16 +111,12 @@ class QuestionHistoryRecord extends Model
      */
     public function getAllQuestion($category, $level)
     {
-
-        // 筛选题目的难度个分类
-        if ($level !== '') {
-            $questionWhere = Question::where('question_category_id', '=', $category)->where('level', '=', $level);
-        } else {
-            $questionWhere = Question::where('question_category_id', '=', $category);
-        }
-
-        // 获取所有的题目
-        $data = (new Question)->where($questionWhere)->where('status', '=', 1)->field($this->filed);
+        // 获取所有的题目,3不限制难度
+       if($level !== 3) {
+           $data = (new Question)->where('question_category_id', '=', $category)->where('status', '=', 1)->where('level','=',$level)->field($this->filed);
+       }else{
+           $data = (new Question)->where('question_category_id', '=', $category)->where('status', '=', 1)->field($this->filed);
+       }
 
         return $data;
     }
