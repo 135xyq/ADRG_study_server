@@ -9,6 +9,7 @@ use app\model\Question as QuestionModel;
 use app\model\AppletUser as AppletUserModel;
 use app\model\QuestionHistoryRecord as QuestionHistoryRecordModel;
 use app\model\AppletUserSet as AppletUserSetModel;
+use app\model\QuestionRecord as QuestionRecordModel;
 
 class Question extends Base
 {
@@ -17,6 +18,7 @@ class Question extends Base
     protected $appletUser;
     protected $questionHistoryRecord;
     protected $userSet;
+    protected $questionRecord;
 
     public function __construct(App $app)
     {
@@ -26,6 +28,7 @@ class Question extends Base
         $this->appletUser = new AppletUserModel();
         $this->questionHistoryRecord = new QuestionHistoryRecordModel();
         $this->userSet = new AppletUserSetModel();
+        $this->questionRecord = new QuestionRecordModel();
     }
 
     /**
@@ -36,19 +39,20 @@ class Question extends Base
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getRandomQuestions(Request $request) {
+    public function getRandomQuestions(Request $request)
+    {
         // 获取用户详情
-        $userSetInfo = $this->userSet->where('applet_user_id','=',$this->userId)->find();
+        $userSetInfo = $this->userSet->where('applet_user_id', '=', $this->userId)->find();
 
         $count = $userSetInfo->question_count; // 出题数
         $type = $userSetInfo->question_type; // 出题的类型1：只出新题 2：只出错题 3：新题+错题 4：无限制
         $level = $userSetInfo->level; // 题目的难度
-        $category = $request->param('category',''); // 题目的分类
+        $category = $request->param('category', ''); // 题目的分类
 
 
         $user = $this->userId;
 
-        if($category === '') {
+        if ($category === '') {
             return $this->error('请选择题目的分类');
         }
 
@@ -56,25 +60,25 @@ class Question extends Base
         $data = null;
 
         // 随机出题 1：只出新题 2：只出错题 3：新题+错题 4：无限制
-        if($type === 1) {
-            $data = $this->questionHistoryRecord->getNewQuestion($user,$category,$level)->orderRaw('rand()')->limit($count)->select();
-        }else if($type === 2){
-            $data = $this->questionHistoryRecord->getErrorQuestion($user,$category,$level)->orderRaw('rand()')->limit($count)->select();
-        }else if($type === 3) {
-            $newData  = $this->questionHistoryRecord->getNewQuestion($user,$category,$level)->select()->toArray();
-            $errorData = $this->questionHistoryRecord->getErrorQuestion($user,$category,$level)->select()->toArray();
+        if ($type === 1) {
+            $data = $this->questionHistoryRecord->getNewQuestion($user, $category, $level)->orderRaw('rand()')->limit($count)->select();
+        } else if ($type === 2) {
+            $data = $this->questionHistoryRecord->getErrorQuestion($user, $category, $level)->orderRaw('rand()')->limit($count)->select();
+        } else if ($type === 3) {
+            $newData = $this->questionHistoryRecord->getNewQuestion($user, $category, $level)->select()->toArray();
+            $errorData = $this->questionHistoryRecord->getErrorQuestion($user, $category, $level)->select()->toArray();
 
             // 在新题和错题中随机抽取count个题目
-            $totalData = array_merge($newData,$errorData);
+            $totalData = array_merge($newData, $errorData);
             $length = count($totalData);
 
             // 打乱数组
             shuffle($totalData);
             // 获取前 count 项
-            $data = array_slice($totalData, 0, min($length,$count));
+            $data = array_slice($totalData, 0, min($length, $count));
 
-        }else{
-            $data = $this->questionHistoryRecord->getAllQuestion($category,$level)->orderRaw('rand()')->limit($count)->select();
+        } else {
+            $data = $this->questionHistoryRecord->getAllQuestion($category, $level)->orderRaw('rand()')->limit($count)->select();
         }
 
 
@@ -104,7 +108,7 @@ class Question extends Base
             'data' => $data
         ];
 
-        return $this->success('success',$res);
+        return $this->success('success', $res);
     }
 
     /**
@@ -115,17 +119,18 @@ class Question extends Base
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function isHasQuestion(Request $request) {
-        $userSetInfo = $this->userSet->where('applet_user_id','=',$this->userId)->find();
+    public function isHasQuestion(Request $request)
+    {
+        $userSetInfo = $this->userSet->where('applet_user_id', '=', $this->userId)->find();
 
         $type = $userSetInfo->question_type; // 出题的类型1：只出新题 2：只出错题 3：新题+错题 4：无限制
         $level = $userSetInfo->level; // 题目的难度
-        $category = $request->param('category',''); // 题目的分类
+        $category = $request->param('category', ''); // 题目的分类
 
 
         $user = $this->userId;
 
-        if($category === '') {
+        if ($category === '') {
             return $this->error('请选择题目的分类');
         }
 
@@ -133,36 +138,77 @@ class Question extends Base
         $data = null;
 
         // 随机出题 1：只出新题 2：只出错题 3：新题+错题 4：无限制
-        if($type === 1) {
-            $data = $this->questionHistoryRecord->getNewQuestion($user,$category,$level)->count();
-        }else if($type === 2){
-            $data = $this->questionHistoryRecord->getErrorQuestion($user,$category,$level)->count();
-        }else if($type === 3) {
-            $newData  = $this->questionHistoryRecord->getNewQuestion($user,$category,$level)->select()->toArray();
-            $errorData = $this->questionHistoryRecord->getErrorQuestion($user,$category,$level)->select()->toArray();
+        if ($type === 1) {
+            $data = $this->questionHistoryRecord->getNewQuestion($user, $category, $level)->count();
+        } else if ($type === 2) {
+            $data = $this->questionHistoryRecord->getErrorQuestion($user, $category, $level)->count();
+        } else if ($type === 3) {
+            $newData = $this->questionHistoryRecord->getNewQuestion($user, $category, $level)->select()->toArray();
+            $errorData = $this->questionHistoryRecord->getErrorQuestion($user, $category, $level)->select()->toArray();
 
-            $totalData = array_merge($newData,$errorData);
+            $totalData = array_merge($newData, $errorData);
             $data = count($totalData);
 
-        }else{
-            $data = $this->questionHistoryRecord->getAllQuestion($category,$level)->count();
+        } else {
+            $data = $this->questionHistoryRecord->getAllQuestion($category, $level)->count();
         }
 
 
         $res = null;
 
-        if($data === 0) {
+        if ($data === 0) {
             $res = [
                 'flag' => false,
                 'msg' => '题目数量为0，请尝试修改组卷方式'
             ];
-        }else{
+        } else {
             $res = [
                 'flag' => true,
                 'msg' => ''
             ];
         }
 
-        return $this->success('success',$res);
+        return $this->success('success', $res);
     }
+
+
+    public function validateQuestionAnswer(Request $request)
+    {
+        $record = $request->param('record',''); // 记录id
+        $answers = $request->param('answers'); // 用户的答案
+        $time = $request->param('time',0);// 用户答题时长
+
+        if($record == ''){
+            return $this->error('提交试卷有误！');
+        }
+
+        $questionRecord = $this->questionRecord->find($record);
+
+        // 做题记录不存在
+        if(empty($questionRecord)) {
+            return $this->error('提交出错了！');
+        }
+
+        // 已经提交过
+        if($questionRecord->is_submit == 1) {
+            return $this->error('不能重复提交试卷！');
+        }
+
+        // dump($answers);
+        // 判题
+        foreach ($answers as $answer) {
+            $question_id = $answer['id'];
+            $question_answer = $answer['answer'];
+
+            $question = $this->question->find($question_id);
+            $this->question->validateQuestion($question,$question_answer);
+        }
+
+        // // 更新做题记录表
+        // $questionRecord->is_submit = 1;
+        // $questionRecord->total_time = $time;
+        // $questionRecord->save();
+
+    }
+
 }
