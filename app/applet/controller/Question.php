@@ -106,4 +106,63 @@ class Question extends Base
 
         return $this->success('success',$res);
     }
+
+    /**
+     * 判断是否还能组卷，能出得题目数量不为0
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function isHasQuestion(Request $request) {
+        $userSetInfo = $this->userSet->where('applet_user_id','=',$this->userId)->find();
+
+        $type = $userSetInfo->question_type; // 出题的类型1：只出新题 2：只出错题 3：新题+错题 4：无限制
+        $level = $userSetInfo->level; // 题目的难度
+        $category = $request->param('category',''); // 题目的分类
+
+
+        $user = $this->userId;
+
+        if($category === '') {
+            return $this->error('请选择题目的分类');
+        }
+
+
+        $data = null;
+
+        // 随机出题 1：只出新题 2：只出错题 3：新题+错题 4：无限制
+        if($type === 1) {
+            $data = $this->questionHistoryRecord->getNewQuestion($user,$category,$level)->count();
+        }else if($type === 2){
+            $data = $this->questionHistoryRecord->getErrorQuestion($user,$category,$level)->count();
+        }else if($type === 3) {
+            $newData  = $this->questionHistoryRecord->getNewQuestion($user,$category,$level)->select()->toArray();
+            $errorData = $this->questionHistoryRecord->getErrorQuestion($user,$category,$level)->select()->toArray();
+
+            $totalData = array_merge($newData,$errorData);
+            $data = count($totalData);
+
+        }else{
+            $data = $this->questionHistoryRecord->getAllQuestion($category,$level)->count();
+        }
+
+
+        $res = null;
+
+        if($data === 0) {
+            $res = [
+                'flag' => false,
+                'msg' => '题目数量为0，请尝试修改组卷方式'
+            ];
+        }else{
+            $res = [
+                'flag' => true,
+                'msg' => ''
+            ];
+        }
+
+        return $this->success('success',$res);
+    }
 }
