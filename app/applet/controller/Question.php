@@ -201,7 +201,8 @@ class Question extends Base
             $question_answer = $answer['answer'];
 
             $question = $this->question->find($question_id);
-            $this->question->validateQuestion($question,$question_answer);
+            $res = $this->question->validateQuestion($question,$question_answer);
+            dump($res);
         }
 
         // // 更新做题记录表

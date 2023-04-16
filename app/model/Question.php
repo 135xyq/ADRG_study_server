@@ -9,7 +9,6 @@ use Fukuball\Jieba\Finalseg;
 use Fukuball\Jieba\JiebaAnalyse;
 
 
-
 class Question extends Model
 {
     public function __construct(array $data = [])
@@ -30,6 +29,7 @@ class Question extends Model
     {
         return $this->belongsTo(QuestionCategory::class);
     }
+
     // 关联题目记录表
     public function questionHistoryRecord()
     {
@@ -37,62 +37,88 @@ class Question extends Model
     }
 
 
-    public function validateQuestion($question,$answer) {
-
+    /**
+     * 判题
+     * @param $question
+     * @param $answer
+     * @return array
+     */
+    public function validateQuestion($question, $answer)
+    {
+        $is_current = 0;
+        $current_probability = 0;
         // 单选题
-        if($question['type'] === 0) {
+        if ($question['type'] === 0) {
             // dump($question['answer'],$answer);
 
             // 判断两个数组是否相等，答案是否正确（比较两个数组的差异）
-            $result = array_diff_assoc($question['answer'],$answer);
+            $result = array_diff_assoc($question['answer'], $answer);
 
-            // dump($result);
             // 答案正确时，$result为空数组
-            if(count($result) === 0) {
-                // dump('答案正确');
-            }else{
+            if (count($result) === 0) {
+                $is_current = 1;
+                $current_probability = 1;
+            } else {
                 // dump('答案错误');
+                $is_current = 0;
+                $current_probability = 0;
             }
 
-        } else if($question['type'] === 1) {
+        } else if ($question['type'] === 1) {
             // 多选题
 
             // dump($question['answer'],$answer);
 
             // 判断两个数组是否相等，答案是否正确（比较两个数组的差异）
-            $result = array_diff_assoc($question['answer'],$answer);
+            $result = array_diff_assoc($question['answer'], $answer);
 
             // dump($result);
 
             // 答案正确时，$result为空数组
-            if(count($result) === 0) {
-                // dump('答案正确');
-            }else{
-                // dump('答案错误');
+            if (count($result) === 0) {
+                $is_current = 1;
+                $current_probability = 1;
+            } else {
+                $is_current = 0;
+                $current_probability = 0;
             }
-        }else if($question['type'] === 2) {
+        } else if ($question['type'] === 2) {
             // 填空题
             // dump('填空题');
 
-            dump($question['answer'],$answer);
+            // dump($question['answer'],$answer);
 
             // 判断两个数组是否相等，答案是否正确（比较两个数组的差异）
-            $result = array_diff_assoc($question['answer'],$answer);
+            $result = array_diff_assoc($question['answer'], $answer);
 
             // dump($result);
 
             // 答案正确时，$result为空数组
-            if(count($result) === 0) {
-                // dump('答案正确');
-            }else{
-                // dump('答案错误');
+            if (count($result) === 0) {
+                $is_current = 1;
+                $current_probability = 1;
+            } else {
+                $is_current = 0;
+                $current_probability = 0;
             }
-        }else if($question['type'] === 3) {
+        } else if ($question['type'] === 3) {
             // 问答题
-            dump(1);
-            $similarityScore = $this->tfidfSimilarity($question['answer'][0],$answer[0]);
-            dump($similarityScore);
+            $similarityScore = $this->tfidfSimilarity($question['answer'][0], $answer[0]);
+
+            // 相似度大于0.7则判定为正确
+            if ($similarityScore > 0.7) {
+                $is_current = 1;
+                $current_probability = $similarityScore;
+            } else {
+                $is_current = 0;
+                $current_probability = 0;
+            }
         }
+
+        return [
+            'is_current' => $is_current,
+            'current_probability' => $current_probability
+        ];
     }
 
     // 使用TF-IDF算法计算文本相似度
@@ -160,7 +186,8 @@ class Question extends Model
      * @param $arr
      * @return array
      */
-    private function count_float_values($arr) {
+    private function count_float_values($arr)
+    {
         $count_arr = array();
         foreach ($arr as $value) {
             if (is_float($value)) {
@@ -181,10 +208,10 @@ class Question extends Model
      */
     public static function onAfterDelete($question)
     {
-        $questionCategory = $question->questionCategory ;
+        $questionCategory = $question->questionCategory;
         // 更新分类的题目数
-        if($questionCategory ) {
-            $questionCategory ->updateStatistics();
+        if ($questionCategory) {
+            $questionCategory->updateStatistics();
         }
     }
 
@@ -193,12 +220,12 @@ class Question extends Model
      * @param $question
      * @return void
      */
-    public static function onAfterInsert($question )
+    public static function onAfterInsert($question)
     {
-        $questionCategory = $question->questionCategory ;
+        $questionCategory = $question->questionCategory;
         // 更新分类的题目数
-        if($questionCategory ) {
-            $questionCategory ->updateStatistics();
+        if ($questionCategory) {
+            $questionCategory->updateStatistics();
         }
     }
 }
