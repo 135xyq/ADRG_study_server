@@ -106,12 +106,12 @@ class Question extends Model
             $similarityScore = $this->tfidfSimilarity($question['answer'][0], $answer[0]);
 
             // 相似度大于0.7则判定为正确
-            if ($similarityScore > 0.7) {
+            if ($similarityScore > 0.6) {
                 $is_current = 1;
                 $current_probability = $similarityScore;
             } else {
                 $is_current = 0;
-                $current_probability = 0;
+                $current_probability = $similarityScore;
             }
         }
 

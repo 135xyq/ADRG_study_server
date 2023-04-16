@@ -194,22 +194,38 @@ class Question extends Base
             return $this->error('不能重复提交试卷！');
         }
 
-        // dump($answers);
+        // 记录所有的判题结果信息
+        $recordsArray = [];
+
         // 判题
         foreach ($answers as $answer) {
             $question_id = $answer['id'];
             $question_answer = $answer['answer'];
 
             $question = $this->question->find($question_id);
+
+            // 判卷
             $res = $this->question->validateQuestion($question,$question_answer);
-            dump($res);
+            // dump($res);
+
+            // 查询出指定记录的id
+            $question_history_record = $this->questionHistoryRecord->where('question_record_id','=',$record)->where('question_id','=',$question_id)->find();
+
+            // 在数组中加入记录的id,便于批量更新
+            $res['id'] = $question_history_record->id;
+
+            $recordsArray[] = ($res);
         }
 
-        // // 更新做题记录表
-        // $questionRecord->is_submit = 1;
-        // $questionRecord->total_time = $time;
-        // $questionRecord->save();
+        //批量更新做题历史记录表
+        $this->questionHistoryRecord->saveAll($recordsArray);
 
+        // 更新做题记录表
+        $questionRecord->is_submit = 1;
+        $questionRecord->total_time = $time;
+        $questionRecord->save();
+
+        return $this->success('提交成功');
     }
 
 }

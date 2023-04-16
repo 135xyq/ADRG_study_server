@@ -17,10 +17,10 @@ class Test
         JiebaAnalyse::init();
 
         // 获取用户输入的文本
-        $userText = "款开源的PHP开发框架";
+        $userText = "问答题答案";
 
         // 获取参考文本，这里可以从数据库或其他数据源中获取
-        $referenceText = "ThinkPHP是一款开源的PHP开发框架";
+        $referenceText = "问答题测试答案";
 
         // 使用TF-IDF算法计算文本相似度
         $similarityScore = $this->tfidfSimilarity($userText, $referenceText);
