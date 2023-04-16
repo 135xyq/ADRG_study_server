@@ -10,6 +10,7 @@ use app\model\AppletUser as AppletUserModel;
 use app\model\QuestionHistoryRecord as QuestionHistoryRecordModel;
 use app\model\AppletUserSet as AppletUserSetModel;
 use app\model\QuestionRecord as QuestionRecordModel;
+use app\model\QuestionCategory as QuestionCategoryModel;
 
 class Question extends Base
 {
@@ -19,6 +20,7 @@ class Question extends Base
     protected $questionHistoryRecord;
     protected $userSet;
     protected $questionRecord;
+    protected $questionCategory;
 
     public function __construct(App $app)
     {
@@ -29,6 +31,7 @@ class Question extends Base
         $this->questionHistoryRecord = new QuestionHistoryRecordModel();
         $this->userSet = new AppletUserSetModel();
         $this->questionRecord = new QuestionRecordModel();
+        $this->questionCategory = new QuestionCategoryModel();
     }
 
     /**
@@ -172,6 +175,14 @@ class Question extends Base
     }
 
 
+    /**
+     * 判题
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function validateQuestionAnswer(Request $request)
     {
         $record = $request->param('record',''); // 记录id
@@ -179,14 +190,14 @@ class Question extends Base
         $time = $request->param('time',0);// 用户答题时长
 
         if($record == ''){
-            return $this->error('提交试卷有误！');
+            return $this->error('获取记录出错！');
         }
 
         $questionRecord = $this->questionRecord->find($record);
 
         // 做题记录不存在
         if(empty($questionRecord)) {
-            return $this->error('提交出错了！');
+            return $this->error('获取记录出错！');
         }
 
         // 已经提交过
@@ -228,4 +239,52 @@ class Question extends Base
         return $this->success('提交成功');
     }
 
+
+    /**
+     * 获取提交的判题结果
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getValidateResult(Request $request)
+    {
+        $record = $request->param('record','');
+
+        if($record == ''){
+            return $this->error('获取记录出错！');
+        }
+
+        $questionRecord = $this->questionRecord->find($record);
+
+        // 做题记录不存在
+        if(empty($questionRecord)) {
+            return $this->error('获取记录出错！');
+        }
+
+        if($questionRecord->is_submit == 0) {
+            return $this->error('未提交过，没有做题结果');
+        }
+
+        // 筛选出指定的答题历史记录
+        $query= $this->questionHistoryRecord->with(['question'=> function ($q){
+            $q->field(['id','title','parse','answer','options','level','type']);
+        }])->hasWhere('question',['status'=>1])->where('question_record_id','=',$record);
+
+        // 获取题目分类信息
+        $recordInfo = $this->questionRecord->with('QuestionCategory')->find($record);
+        $recordInfo = $recordInfo->hidden(['applet_user_id','is_submit']);
+
+        $total = $query->count();
+        $data = $query->select();
+
+        $res = [
+            'total' => $total,
+            'record' => $recordInfo,
+            'data' => $data
+        ];
+
+        return $this->success('success',$res);
+    }
 }
