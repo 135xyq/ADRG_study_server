@@ -3,6 +3,9 @@ declare (strict_types = 1);
 
 namespace app;
 
+use Fukuball\Jieba\Finalseg;
+use Fukuball\Jieba\Jieba;
+use Fukuball\Jieba\JiebaAnalyse;
 use think\App;
 use think\exception\ValidateException;
 use think\Validate;
@@ -45,6 +48,10 @@ abstract class BaseController
     {
         $this->app     = $app;
         $this->request = $this->app->request;
+        // 初始化分词工具
+        Jieba::init();
+        Finalseg::init();
+        JiebaAnalyse::init();
 
         // 控制器初始化
         $this->initialize();
