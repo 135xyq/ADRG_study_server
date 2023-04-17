@@ -9,7 +9,7 @@ class AppletUserSetValidate extends Validate
     protected $rule = [
         'question_type' => 'in:1,2,3,4',
         'question_count' => 'in:10,15,20,25',
-        'level' => 'in:1,2,3,4'
+        'level' => 'in:0,1,2,3'
     ];
 
     protected $message = [
