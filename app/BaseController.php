@@ -10,6 +10,9 @@ use think\App;
 use think\exception\ValidateException;
 use think\Validate;
 
+// 设置内存占用无上限
+ini_set ("memory_limit","-1");
+
 /**
  * 控制器基础类
  */
