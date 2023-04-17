@@ -210,11 +210,11 @@ class Question extends Base
 
         // 判题
         foreach ($answers as $answer) {
+
             $question_id = $answer['id'];
             $question_answer = $answer['answer'];
 
             $question = $this->question->find($question_id);
-
             // 判卷
             $res = $this->question->validateQuestion($question,$question_answer);
             // dump($res);
@@ -222,8 +222,9 @@ class Question extends Base
             // 查询出指定记录的id
             $question_history_record = $this->questionHistoryRecord->where('question_record_id','=',$record)->where('question_id','=',$question_id)->find();
 
-            // 在数组中加入记录的id,便于批量更新
+            // 在数组中加入记录的id和用户答案,便于批量更新
             $res['id'] = $question_history_record->id;
+            $res['answer'] = $question_answer;
 
             $recordsArray[] = ($res);
         }
