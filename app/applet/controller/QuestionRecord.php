@@ -17,6 +17,14 @@ class QuestionRecord extends Base
         $this->questionRecord = new QuestionRecordModel();
     }
 
+    /**
+     * 分页获取刷题记录
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function getRecordPage(Request $request) {
         // 要筛选试卷的类型，-1：不筛选,0：未完成，1：已完后
         $type = $request->param('type',-1);
@@ -26,6 +34,7 @@ class QuestionRecord extends Base
         // 统计有多少题目
         $query =  $this->questionRecord->with('questionCategory')->withCount('questionHistoryRecord');
 
+        // 筛选数据类型
         if($type != -1) {
             $query->where('is_submit','=',$type);
         }
@@ -41,7 +50,5 @@ class QuestionRecord extends Base
         ];
 
         return $this->success('success',$data);
-
-
     }
 }
