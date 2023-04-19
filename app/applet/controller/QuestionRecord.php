@@ -23,13 +23,14 @@ class QuestionRecord extends Base
         $page = $request->param('page',1,'intval');
         $limit = $request->param('limit',10,'intval');
 
-        $query =  $this->questionRecord->with('questionCategory');
+        // 统计有多少题目
+        $query =  $this->questionRecord->with('questionCategory')->withCount('questionHistoryRecord');
 
-        if($type !== -1) {
+        if($type != -1) {
             $query->where('is_submit','=',$type);
         }
 
-       $query->where('applet_user_id','=',$this->userId);
+       $query->where('applet_user_id','=',$this->userId)->order('create_time','desc');
 
         $total = $query->count();
         $res = $query->page($page,$limit)->select();
@@ -40,6 +41,7 @@ class QuestionRecord extends Base
         ];
 
         return $this->success('success',$data);
+
 
     }
 }
