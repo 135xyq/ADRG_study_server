@@ -4,6 +4,7 @@ namespace app\applet\controller;
 use app\model\QuestionHistoryRecord as QuestionHistoryRecordModel;
 use app\model\QuestionRecord as QuestionRecordModel;
 use app\model\QuestionCategory as QuestionCategoryModel;
+use app\model\Question as QuestionModel;
 use app\Request;
 use think\App;
 
@@ -13,6 +14,7 @@ class QuestionHistoryRecord extends Base
     protected $questionHistoryRecord;
     protected $questionRecord;
     protected $questionCategory;
+    protected $question;
 
 
     public function __construct(App $app)
@@ -22,6 +24,7 @@ class QuestionHistoryRecord extends Base
         $this->questionHistoryRecord = new QuestionHistoryRecordModel();
         $this->questionRecord = new QuestionRecordModel();
         $this->questionCategory = new QuestionCategoryModel();
+        $this->question = new QuestionModel();
     }
 
     /**
@@ -92,20 +95,23 @@ class QuestionHistoryRecord extends Base
         return $this->success('success',$errorQuestionList);
     }
 
-    public function getErrorQuestion(Request $request) {
-        $res = $this->questionHistoryRecord->getAllErrorQuestionId($this->userId);
+    /**
+     * 获取题目详情
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getQuestionDetail(Request $request) {
+        $id = $request->param('question','');
 
-        // dump(count($res));
+        if($id == '') {
+            return $this->error('获取题目详情失败');
+        }
 
-        // $res = array_unique($res);
+        $res = $this->question->find($id);
 
-        $res = array_flip($res);
-        /* 跟第一个例子一样，但是现在我们先提取数组的键值 */
-        $res = array_keys($res);
-        //
-        // dump(count($res));
-
-        $res = $this->questionHistoryRecord->getQuestionCategoryCount($this->userId);
         return $this->success('success',$res);
     }
 
