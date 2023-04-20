@@ -272,9 +272,8 @@ class Question extends Base
         $query= $this->questionHistoryRecord->with(['question'=> function ($q){
             $q->field(['id','title','parse','answer','options','level','type']);
         }])->hasWhere('question',['status'=>1])->where('question_record_id','=',$record);
-
         // 获取题目分类信息
-        $recordInfo = $this->questionRecord->with('QuestionCategory')->find($record);
+        $recordInfo = $this->questionRecord->with('questionCategory')->find($record);
         $recordInfo = $recordInfo->hidden(['applet_user_id','is_submit']);
 
         $total = $query->count();

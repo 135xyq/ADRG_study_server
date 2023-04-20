@@ -25,7 +25,7 @@ class QuestionHistoryRecord extends Model
     // 关联题目表
     public function question()
     {
-        return $this->hasOne(Question::class);
+        return $this->belongsTo(Question::class);
     }
 
     /**
