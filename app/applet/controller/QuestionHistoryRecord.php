@@ -73,6 +73,25 @@ class QuestionHistoryRecord extends Base
         return $this->success('success',$data);
     }
 
+    /**
+     * 获取指定分类下的所有错题id
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function getAllErrorQuestionId(Request $request) {
+        $category = $request->param('category','');
+
+        // 分类不能为空
+        if($category === '') {
+            return $this->error('获取题目列表失败');
+        }
+
+        // 获取错题的列表id
+        $errorQuestionList = $this->questionHistoryRecord->getAllErrorQuestionId($this->userId, $category);
+
+        return $this->success('success',$errorQuestionList);
+    }
+
     public function getErrorQuestion(Request $request) {
         $res = $this->questionHistoryRecord->getAllErrorQuestionId($this->userId);
 
