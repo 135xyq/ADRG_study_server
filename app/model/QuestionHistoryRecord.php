@@ -25,7 +25,7 @@ class QuestionHistoryRecord extends Model
     // 关联题目表
     public function question()
     {
-        return $this->belongsTo(Question::class);
+        return $this->hasOne(Question::class);
     }
 
     /**
@@ -60,7 +60,7 @@ class QuestionHistoryRecord extends Model
     public function getErrorQuestion($user, $category, $level)
     {
         // 获取记录表中的那些已经提交的错题
-        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '=', '1')->where('question_category_id', '=', $category);
+        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '=', 1)->where('question_category_id', '=', $category);
 
 
         $ids = $this->hasWhere('questionRecord', $where)
@@ -87,7 +87,7 @@ class QuestionHistoryRecord extends Model
     public function getNewQuestion($user, $category, $level)
     {
         // 获取记录表中的那些已经提交
-        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '=', '1')->where('question_category_id', '=', $category);
+        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '=', 1)->where('question_category_id', '=', $category);
 
         // 获取用户已经做过的题目列表
         $doneIds = $this->hasWhere('questionRecord', $where)->column('question_id');
@@ -121,4 +121,25 @@ class QuestionHistoryRecord extends Model
         return $data;
     }
 
+
+
+    /**
+     * 获取所有错题的id
+     * @param $user
+     * @param $category
+     * @return int
+     */
+    public function getAllErrorQuestionId($user, $category)
+    {
+        // 获取记录表中的那些已经提交的错题
+        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '=', 1)->where('question_category_id', '=', $category);
+
+
+        $ids = $this->hasWhere('questionRecord', $where)
+            ->where('is_current', '=', 0)
+            ->column('question_id');
+
+        // 返回去重后的错题数量
+        return count(array_values(array_unique($ids)));
+    }
 }

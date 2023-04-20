@@ -15,6 +15,13 @@ class QuestionCategory extends Model
         return $this->hasMany(Question::class);
     }
 
+    // 关联出题记录表
+    public function questionRecord()
+    {
+        return $this->hasMany(QuestionRecord::class);
+    }
+
+
 
     /**
      * 监听分类的删除事件,在删除前先删除分类下的题目

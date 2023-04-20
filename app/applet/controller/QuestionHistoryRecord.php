@@ -3,6 +3,7 @@
 namespace app\applet\controller;
 use app\model\QuestionHistoryRecord as QuestionHistoryRecordModel;
 use app\model\QuestionRecord as QuestionRecordModel;
+use app\model\QuestionCategory as QuestionCategoryModel;
 use app\Request;
 use think\App;
 
@@ -11,6 +12,7 @@ class QuestionHistoryRecord extends Base
     protected $userId;
     protected $questionHistoryRecord;
     protected $questionRecord;
+    protected $questionCategory;
 
 
     public function __construct(App $app)
@@ -19,6 +21,7 @@ class QuestionHistoryRecord extends Base
         $this->userId = $this->userInfo['id'];
         $this->questionHistoryRecord = new QuestionHistoryRecordModel();
         $this->questionRecord = new QuestionRecordModel();
+        $this->questionCategory = new QuestionCategoryModel();
     }
 
     /**
@@ -68,5 +71,58 @@ class QuestionHistoryRecord extends Base
         ];
 
         return $this->success('success',$data);
+    }
+
+    public function getErrorQuestion(Request $request) {
+        $res = $this->questionHistoryRecord->getAllErrorQuestionId($this->userId);
+
+        // dump(count($res));
+
+        // $res = array_unique($res);
+
+        $res = array_flip($res);
+        /* 跟第一个例子一样，但是现在我们先提取数组的键值 */
+        $res = array_keys($res);
+        //
+        // dump(count($res));
+
+        $res = $this->questionHistoryRecord->getQuestionCategoryCount($this->userId);
+        return $this->success('success',$res);
+    }
+
+    /**
+     * 获取用户每一种分类错题的数量
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getQuestionCategoryCount(Request $request)
+    {
+
+        // 获取用户试卷出现的分类列表
+        $categoryList = $this->questionRecord->where('applet_user_id', '=', $this->userId)->where('is_submit', '=', 1)->column('question_category_id');
+
+        // 得到=去重后的用户出题分类id
+        $categoryIdList = array_values(array_unique($categoryList));
+
+        $data = [];
+        foreach ($categoryIdList as $category) {
+            // 获取指定分类的错题数量
+            $errorQuestionCount = $this->questionHistoryRecord->getAllErrorQuestionId($this->userId, $category);
+
+            // 没有错题的分类舍弃
+            if($errorQuestionCount > 0) {
+                // 获取分类数据
+                $categoryInfo = $this->questionCategory->find($category);
+
+                // 数据组合
+                $categoryInfo['errorQuestionCount'] = $errorQuestionCount;
+                $data[] = $categoryInfo;
+            }
+        }
+
+        return $this->success('success', $data);
     }
 }
