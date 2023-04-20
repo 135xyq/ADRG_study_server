@@ -127,7 +127,7 @@ class QuestionHistoryRecord extends Model
      * 获取所有错题的id
      * @param $user
      * @param $category
-     * @return int
+     * @return array
      */
     public function getAllErrorQuestionId($user, $category)
     {
@@ -139,7 +139,7 @@ class QuestionHistoryRecord extends Model
             ->where('is_current', '=', 0)
             ->column('question_id');
 
-        // 返回去重后的错题数量
-        return count(array_values(array_unique($ids)));
+        // 返回去重后的错题
+        return array_values(array_unique($ids));
     }
 }

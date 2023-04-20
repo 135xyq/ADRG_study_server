@@ -110,7 +110,8 @@ class QuestionHistoryRecord extends Base
         $data = [];
         foreach ($categoryIdList as $category) {
             // 获取指定分类的错题数量
-            $errorQuestionCount = $this->questionHistoryRecord->getAllErrorQuestionId($this->userId, $category);
+            $errorQuestionList = $this->questionHistoryRecord->getAllErrorQuestionId($this->userId, $category);
+            $errorQuestionCount = count($errorQuestionList);
 
             // 没有错题的分类舍弃
             if($errorQuestionCount > 0) {
