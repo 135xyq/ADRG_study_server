@@ -52,10 +52,10 @@ class Question extends Model
             // dump($question['answer'],$answer);
 
             // 判断两个数组是否相等，答案是否正确（比较两个数组的差异）
-            $result = array_diff_assoc($question['answer'], $answer);
+            $result = count(array_diff($question['answer'], $answer)) +count(array_diff($answer,$question['answer']));
 
-            // 答案正确时，$result为空数组
-            if (count($result) === 0) {
+            // 答案正确时，$result为0
+            if ($result === 0) {
                 $is_current = 1;
                 $current_probability = 1;
             } else {
@@ -70,12 +70,10 @@ class Question extends Model
             // dump($question['answer'],$answer);
 
             // 判断两个数组是否相等，答案是否正确（比较两个数组的差异）
-            $result = array_diff_assoc($question['answer'], $answer);
+            $result = count(array_diff($question['answer'], $answer)) +count(array_diff($answer,$question['answer']));
 
-            // dump($result);
-
-            // 答案正确时，$result为空数组
-            if (count($result) === 0) {
+            // 答案正确时，$result为0
+            if ($result === 0) {
                 $is_current = 1;
                 $current_probability = 1;
             } else {
@@ -89,12 +87,12 @@ class Question extends Model
             // dump($question['answer'],$answer);
 
             // 判断两个数组是否相等，答案是否正确（比较两个数组的差异）
-            $result = array_diff_assoc($question['answer'], $answer);
+            $result = count(array_diff($question['answer'], $answer)) +count(array_diff($answer,$question['answer']));
 
             // dump($result);
 
-            // 答案正确时，$result为空数组
-            if (count($result) === 0) {
+            // 答案正确时，$result为0
+            if ($result === 0) {
                 $is_current = 1;
                 $current_probability = 1;
             } else {
