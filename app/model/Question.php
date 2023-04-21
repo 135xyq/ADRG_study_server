@@ -214,6 +214,18 @@ class Question extends Model
     }
 
     /**
+     * 在删除题目前先删除刷题历史记录
+     * @param $question
+     * @return mixed|void
+     */
+    public static function onBeforeDelete($question)
+    {
+        QuestionHistoryRecord::destroy(function($query) use($question){
+            $query->where('question_id','=',$question->id);
+        });
+    }
+
+    /**
      * 监听题目新增，统计题目数量
      * @param $question
      * @return void
