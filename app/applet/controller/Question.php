@@ -225,6 +225,7 @@ class Question extends Base
             // 在数组中加入记录的id和用户答案,便于批量更新
             $res['id'] = $question_history_record->id;
             $res['answer'] = $question_answer;
+            $res['question_id'] = $question_id;
 
             $recordsArray[] = ($res);
         }
