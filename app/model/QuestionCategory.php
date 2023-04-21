@@ -24,14 +24,17 @@ class QuestionCategory extends Model
 
 
     /**
-     * 监听分类的删除事件,在删除前先删除分类下的题目
-     *
+     * 监听分类的删除事件,在删除前先删除分类下的题目和刷题记录
      * @param $questionCategory
      * @return mixed|void
      */
     public static function onBeforeDelete($questionCategory)
     {
+        // 删除题目
         Question::where('question_category_id', $questionCategory->id)->select()->delete();
+
+        // 删除刷题记录
+        QuestionRecord::where('question_category_id', $questionCategory->id)->select()->delete();
     }
 
     public function updateStatistics()
