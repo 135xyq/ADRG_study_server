@@ -40,11 +40,11 @@ class QuestionHistoryRecord extends Model
         // 获取记录表中的那些已经提交的错题
         $where = (new QuestionRecord)->where('applet_user_id', '=', $user)
             ->where('is_submit', '=', 1)
-            ->where('question_category_id','=',$category);
+            ->where('question_category_id', '=', $category);
 
 
         // 要去重
-        $data =  $this->hasWhere('questionRecord', $where)->column('question_id');
+        $data = $this->hasWhere('questionRecord', $where)->column('question_id');
 
         // 去重后的刷题数量
         return count(array_unique($data));
@@ -68,9 +68,9 @@ class QuestionHistoryRecord extends Model
             ->column('question_id');
 
         // 3是不限制难度
-        if($level !== 3) {
-            $data = (new Question)->whereIn('id', $ids)->where('level','=',$level)->where('status', '=', 1)->field($this->filed);
-        }else{
+        if ($level !== 3) {
+            $data = (new Question)->whereIn('id', $ids)->where('level', '=', $level)->where('status', '=', 1)->field($this->filed);
+        } else {
             $data = (new Question)->whereIn('id', $ids)->where('status', '=', 1)->field($this->filed);
         }
         return $data;
@@ -94,9 +94,9 @@ class QuestionHistoryRecord extends Model
 
         // 获取没有做过的题目
         // 3是不限制难度
-        if($level !== 3) {
-            $data = (new Question)->whereNotIn('id', $doneIds)->where('level','=',$level)->where('status', '=', 1)->field($this->filed);
-        }else{
+        if ($level !== 3) {
+            $data = (new Question)->whereNotIn('id', $doneIds)->where('level', '=', $level)->where('status', '=', 1)->field($this->filed);
+        } else {
             $data = (new Question)->whereNotIn('id', $doneIds)->where('status', '=', 1)->field($this->filed);
         }
 
@@ -112,15 +112,14 @@ class QuestionHistoryRecord extends Model
     public function getAllQuestion($category, $level)
     {
         // 获取所有的题目,3不限制难度
-       if($level !== 3) {
-           $data = (new Question)->where('question_category_id', '=', $category)->where('status', '=', 1)->where('level','=',$level)->field($this->filed);
-       }else{
-           $data = (new Question)->where('question_category_id', '=', $category)->where('status', '=', 1)->field($this->filed);
-       }
+        if ($level !== 3) {
+            $data = (new Question)->where('question_category_id', '=', $category)->where('status', '=', 1)->where('level', '=', $level)->field($this->filed);
+        } else {
+            $data = (new Question)->where('question_category_id', '=', $category)->where('status', '=', 1)->field($this->filed);
+        }
 
         return $data;
     }
-
 
 
     /**
@@ -141,5 +140,27 @@ class QuestionHistoryRecord extends Model
 
         // 返回去重后的错题
         return array_values(array_unique($ids));
+    }
+
+    /**
+     * 监听记录更新,统计题目中的答题次数和答对次数
+     * @param $questionHistoryRecord
+     * @return void
+     */
+    public static function onAfterUpdate($questionHistoryRecord)
+    {
+
+        $record = Question::where('id', '=', $questionHistoryRecord->question_id)->find();
+
+        // 更新题目表中的答对次数,只有答对才更新
+        if ($questionHistoryRecord->is_current === 1) {
+            $record->solve_count += 1;
+        }
+
+        // 更新出题总次数
+        $record->test_count += 1;
+
+        $record->save();
+
     }
 }
