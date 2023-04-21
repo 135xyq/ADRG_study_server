@@ -1,6 +1,7 @@
 <?php
 
 namespace app\applet\controller;
+
 use app\model\QuestionHistoryRecord as QuestionHistoryRecordModel;
 use app\model\QuestionRecord as QuestionRecordModel;
 use app\model\QuestionCategory as QuestionCategoryModel;
@@ -35,35 +36,36 @@ class QuestionHistoryRecord extends Base
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getRecordInfo(Request $request) {
-        $recordId = $request->param('record','');
+    public function getRecordInfo(Request $request)
+    {
+        $recordId = $request->param('record', '');
 
-        if($recordId === '') {
+        if ($recordId === '') {
             return $this->error('出错了');
         }
 
         // 记录不存在
         $record = $this->questionRecord->find($recordId);
-        if(empty($record)) {
+        if (empty($record)) {
             return $this->error('出错了！');
         }
 
         // 已经提交的试卷继续答题
-        if($record->is_submit === 1) {
+        if ($record->is_submit === 1) {
             return $this->error('试卷已提交！');
         }
 
         // 题目字段
         $field = ['id', 'type', 'title', 'level', 'options', 'question_category_id', 'status'];
 
-        $res = $this->questionHistoryRecord->with(['question'=>function($q) use ($field){
+        $res = $this->questionHistoryRecord->with(['question' => function ($q) use ($field) {
             $q->field($field);
-        }])->where('question_record_id','=',$recordId)->select()->toArray();
+        }])->where('question_record_id', '=', $recordId)->select()->toArray();
 
         $questionList = [];
 
         // 只需要获取题目信息
-        foreach ($res as $question){
+        foreach ($res as $question) {
             $questionList[] = $question['question'];
         }
 
@@ -73,7 +75,7 @@ class QuestionHistoryRecord extends Base
             'data' => $questionList
         ];
 
-        return $this->success('success',$data);
+        return $this->success('success', $data);
     }
 
     /**
@@ -81,18 +83,27 @@ class QuestionHistoryRecord extends Base
      * @param Request $request
      * @return \think\response\Json
      */
-    public function getAllErrorQuestionId(Request $request) {
-        $category = $request->param('category','');
+    public function getAllErrorQuestionId(Request $request)
+    {
+        $category = $request->param('category', '');
 
         // 分类不能为空
-        if($category === '') {
+        if ($category === '') {
             return $this->error('获取题目列表失败');
         }
+
+        $categoryInfo = $this->questionCategory->find($category);
+
 
         // 获取错题的列表id
         $errorQuestionList = $this->questionHistoryRecord->getAllErrorQuestionId($this->userId, $category);
 
-        return $this->success('success',$errorQuestionList);
+        $data = [
+            'category' => $categoryInfo,
+            'ids' => $errorQuestionList
+        ];
+
+        return $this->success('success', $data);
     }
 
     /**
@@ -103,16 +114,17 @@ class QuestionHistoryRecord extends Base
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getQuestionDetail(Request $request) {
-        $id = $request->param('question','');
+    public function getQuestionDetail(Request $request)
+    {
+        $id = $request->param('question', '');
 
-        if($id == '') {
+        if ($id == '') {
             return $this->error('获取题目详情失败');
         }
 
         $res = $this->question->find($id);
 
-        return $this->success('success',$res);
+        return $this->success('success', $res);
     }
 
     /**
@@ -139,7 +151,7 @@ class QuestionHistoryRecord extends Base
             $errorQuestionCount = count($errorQuestionList);
 
             // 没有错题的分类舍弃
-            if($errorQuestionCount > 0) {
+            if ($errorQuestionCount > 0) {
                 // 获取分类数据
                 $categoryInfo = $this->questionCategory->find($category);
 
