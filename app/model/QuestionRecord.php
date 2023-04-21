@@ -24,4 +24,16 @@ class QuestionRecord extends Model
         return $this->belongsTo(QuestionCategory::class);
     }
 
+    /**
+     * 在删除试卷之前先删除记录
+     * @param $questionRecord
+     * @return mixed|void
+     */
+    public static function onBeforeDelete($questionRecord)
+    {
+        QuestionHistoryRecord::destroy(function($query) use($questionRecord){
+            $query->where('question_record_id','=',$questionRecord->id);
+        });
+    }
+
 }
