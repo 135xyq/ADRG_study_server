@@ -34,7 +34,14 @@ class QuestionRecord extends Base
         $limit = $request->param('limit', 20, 'intval');
 
 
-        $query = $this->questionRecord;
+        $query = $this->questionRecord->with(['user' => function($q){
+            $q->field(['id','nick_name']);
+        },'questionCategory' => function($q){
+            $q->field(['id','title']);
+        },'questionHistoryRecord' => function($q){
+            $q->field(['id','question_record_id']);
+        }]);
+
 
         if ($category !== '') {
             $query = $query->hasWhere('questionCategory', ['id' => $category]);
@@ -51,11 +58,13 @@ class QuestionRecord extends Base
 
         // 筛选时间段
         if (!empty($time)) {
-            $query->whereBetweenTime('question_record.create_time', $time[0],$time[1]);
+            $query->whereBetweenTime('create_time', $time[0],$time[1]);
         }
+
 
         $total = $query->count();
         $res = $query->page($page, $limit)->select();
+
 
         $data = [
             'total' => $total,
