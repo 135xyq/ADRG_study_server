@@ -5,15 +5,18 @@ namespace app\admin\controller;
 use app\Request;
 use think\App;
 use app\model\QuestionRecord as QuestionRecordModel;
+use app\model\QuestionHistoryRecord as QuestionHistoryRecordModel;
 
 class QuestionRecord extends Base
 {
     protected $questionRecord;
+    protected $questionHistoryRecord;
 
     public function __construct(App $app)
     {
         parent::__construct($app);
         $this->questionRecord = new QuestionRecordModel();
+        $this->questionHistoryRecord = new QuestionHistoryRecordModel();
     }
 
     /**
@@ -34,12 +37,12 @@ class QuestionRecord extends Base
         $limit = $request->param('limit', 20, 'intval');
 
 
-        $query = $this->questionRecord->with(['user' => function($q){
-            $q->field(['id','nick_name']);
-        },'questionCategory' => function($q){
-            $q->field(['id','title']);
-        },'questionHistoryRecord' => function($q){
-            $q->field(['id','question_record_id']);
+        $query = $this->questionRecord->with(['user' => function ($q) {
+            $q->field(['id', 'nick_name']);
+        }, 'questionCategory' => function ($q) {
+            $q->field(['id', 'title']);
+        }, 'questionHistoryRecord' => function ($q) {
+            $q->field(['id', 'question_record_id']);
         }]);
 
 
@@ -58,7 +61,7 @@ class QuestionRecord extends Base
 
         // 筛选时间段
         if (!empty($time)) {
-            $query->whereBetweenTime('create_time', $time[0],$time[1]);
+            $query->whereBetweenTime('create_time', $time[0], $time[1]);
         }
 
 
@@ -73,4 +76,55 @@ class QuestionRecord extends Base
 
         return $this->success('success', $data);
     }
+
+    /**
+     * 获取用户已经交卷的刷题记录
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getUserSubmitRecordQuestionDetail(Request $request)
+    {
+        $record = $request->param('record', '');
+
+        if ($record == '') {
+            return $this->error('请选择记录！');
+        }
+
+        $questionRecord = $this->questionRecord->find($record);
+
+        // 做题记录不存在
+        if (empty($questionRecord)) {
+            return $this->error('获取记录出错！');
+        }
+
+        if ($questionRecord->is_submit == 0) {
+            return $this->error('未提交过，没有做题结果');
+        }
+
+        // 筛选出指定的答题历史记录
+        $query = $this->questionHistoryRecord->with(['question' => function ($q) {
+            $q->field(['id', 'title', 'parse', 'answer', 'options', 'level', 'type']);
+        }])->hasWhere('question', ['status' => 1])->where('question_record_id', '=', $record);
+        // 获取题目分类信息
+        $recordInfo = $this->questionRecord->with(['questionCategory', 'user' => function ($q) {
+            $q->field(['id', 'nick_name']);
+        }])->find($record);
+
+        $total = $query->count();
+        $data = $query->select();
+
+        $res = [
+            'total' => $total,
+            'record' => $recordInfo,
+            'data' => $data
+        ];
+
+        return $this->success('success', $res);
+
+    }
+
+
 }
