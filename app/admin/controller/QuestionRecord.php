@@ -78,7 +78,7 @@ class QuestionRecord extends Base
     }
 
     /**
-     * 获取用户已经交卷的刷题记录
+     * 获取刷题记录
      * @param Request $request
      * @return \think\response\Json
      * @throws \think\db\exception\DataNotFoundException
@@ -98,10 +98,6 @@ class QuestionRecord extends Base
         // 做题记录不存在
         if (empty($questionRecord)) {
             return $this->error('获取记录出错！');
-        }
-
-        if ($questionRecord->is_submit == 0) {
-            return $this->error('未提交过，没有做题结果');
         }
 
         // 筛选出指定的答题历史记录
@@ -125,6 +121,4 @@ class QuestionRecord extends Base
         return $this->success('success', $res);
 
     }
-
-
 }
