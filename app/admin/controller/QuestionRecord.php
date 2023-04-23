@@ -2,6 +2,7 @@
 
 namespace app\admin\controller;
 
+use app\model\Question as QuestionModel;
 use app\Request;
 use think\App;
 use app\model\QuestionRecord as QuestionRecordModel;
@@ -120,5 +121,31 @@ class QuestionRecord extends Base
 
         return $this->success('success', $res);
 
+    }
+
+
+    /**
+     * 批量删除刷题记录
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function deleteQuestionRecord(Request $request) {
+        $id = $request->param('id');
+
+        if(!$id){
+            return $this->error('请选择删除的记录！');
+        }
+
+        $ids = ['id'=>explode(',',$id)];
+        $bool = QuestionRecordModel::destroy($ids);
+        if($bool){
+
+            // 写入操作日志
+            $this->writeDoLog($request->param());
+
+            return $this->success('删除成功！');
+        }else{
+            return $this->error('删除失败');
+        }
     }
 }
