@@ -36,6 +36,7 @@ class QuestionRecord extends Base
         $time = $request->param('time', ''); // 时间
         $page = $request->param('page', 1, 'intval');
         $limit = $request->param('limit', 20, 'intval');
+        $sort = $request->param('sort', 'create_time'); // 排序方式
 
 
         $query = $this->questionRecord->with(['user' => function ($q) {
@@ -56,7 +57,7 @@ class QuestionRecord extends Base
         }
 
         // 筛选类型
-        if ($type !== -1) {
+        if ($type != -1) {
             $query->where('is_submit', $type);
         }
 
@@ -67,7 +68,7 @@ class QuestionRecord extends Base
 
 
         $total = $query->count();
-        $res = $query->page($page, $limit)->select();
+        $res = $query->order($sort, 'desc')->page($page, $limit)->select();
 
 
         $data = [
@@ -129,22 +130,23 @@ class QuestionRecord extends Base
      * @param Request $request
      * @return \think\response\Json
      */
-    public function deleteQuestionRecord(Request $request) {
+    public function deleteQuestionRecord(Request $request)
+    {
         $id = $request->param('id');
 
-        if(!$id){
+        if (!$id) {
             return $this->error('请选择删除的记录！');
         }
 
-        $ids = ['id'=>explode(',',$id)];
+        $ids = ['id' => explode(',', $id)];
         $bool = QuestionRecordModel::destroy($ids);
-        if($bool){
+        if ($bool) {
 
             // 写入操作日志
             $this->writeDoLog($request->param());
 
             return $this->success('删除成功！');
-        }else{
+        } else {
             return $this->error('删除失败');
         }
     }
