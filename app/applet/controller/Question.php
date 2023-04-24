@@ -236,6 +236,7 @@ class Question extends Base
         // 更新做题记录表
         $questionRecord->is_submit = 1;
         $questionRecord->total_time = $time;
+        $questionRecord->submit_time = date('Y-m-d H:i:s');
         $questionRecord->save();
 
         return $this->success('提交成功');
