@@ -149,18 +149,19 @@ class QuestionHistoryRecord extends Model
      */
     public static function onAfterUpdate($questionHistoryRecord)
     {
+        if( $questionHistoryRecord->question_id) {
+            $record = Question::where('id', '=', $questionHistoryRecord->question_id)->find();
 
-        $record = Question::where('id', '=', $questionHistoryRecord->question_id)->find();
+            // 更新题目表中的答对次数,只有答对才更新
+            if ($questionHistoryRecord->is_current === 1) {
+                $record->solve_count += 1;
+            }
 
-        // 更新题目表中的答对次数,只有答对才更新
-        if ($questionHistoryRecord->is_current === 1) {
-            $record->solve_count += 1;
+            // 更新出题总次数
+            $record->test_count += 1;
+
+            $record->save();
         }
-
-        // 更新出题总次数
-        $record->test_count += 1;
-
-        $record->save();
 
     }
 }
