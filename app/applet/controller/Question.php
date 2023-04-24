@@ -201,7 +201,7 @@ class Question extends Base
         }
 
         // 已经提交过
-        if($questionRecord->is_submit == 1) {
+        if($questionRecord->is_submit !== 0) {
             return $this->error('不能重复提交试卷！');
         }
 

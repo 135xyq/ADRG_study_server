@@ -51,7 +51,7 @@ class QuestionHistoryRecord extends Base
         }
 
         // 已经提交的试卷继续答题
-        if ($record->is_submit === 1) {
+        if ($record->is_submit !== 0) {
             return $this->error('试卷已提交！');
         }
 
@@ -139,7 +139,7 @@ class QuestionHistoryRecord extends Base
     {
 
         // 获取用户试卷出现的分类列表
-        $categoryList = $this->questionRecord->where('applet_user_id', '=', $this->userId)->where('is_submit', '=', 1)->column('question_category_id');
+        $categoryList = $this->questionRecord->where('applet_user_id', '=', $this->userId)->where('is_submit', '<>', 0)->column('question_category_id');
 
         // 得到=去重后的用户出题分类id
         $categoryIdList = array_values(array_unique($categoryList));

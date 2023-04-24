@@ -39,7 +39,7 @@ class QuestionHistoryRecord extends Model
     {
         // 获取记录表中的那些已经提交的错题
         $where = (new QuestionRecord)->where('applet_user_id', '=', $user)
-            ->where('is_submit', '=', 1)
+            ->where('is_submit', '<>', 0)
             ->where('question_category_id', '=', $category);
 
 
@@ -60,7 +60,7 @@ class QuestionHistoryRecord extends Model
     public function getErrorQuestion($user, $category, $level)
     {
         // 获取记录表中的那些已经提交的错题
-        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '=', 1)->where('question_category_id', '=', $category);
+        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '<>', 0)->where('question_category_id', '=', $category);
 
 
         $ids = $this->hasWhere('questionRecord', $where)
@@ -87,7 +87,7 @@ class QuestionHistoryRecord extends Model
     public function getNewQuestion($user, $category, $level)
     {
         // 获取记录表中的那些已经提交
-        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '=', 1)->where('question_category_id', '=', $category);
+        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '<>', 0)->where('question_category_id', '=', $category);
 
         // 获取用户已经做过的题目列表
         $doneIds = $this->hasWhere('questionRecord', $where)->column('question_id');
@@ -131,7 +131,7 @@ class QuestionHistoryRecord extends Model
     public function getAllErrorQuestionId($user, $category)
     {
         // 获取记录表中的那些已经提交的错题
-        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '=', 1)->where('question_category_id', '=', $category);
+        $where = QuestionRecord::where('applet_user_id', '=', $user)->where('is_submit', '<>', 0)->where('question_category_id', '=', $category);
 
 
         $ids = $this->hasWhere('questionRecord', $where)

@@ -10,7 +10,7 @@ class QuestionRecordValidate extends Validate
         'id' => 'require',
         'question_category_id' => 'require',
         'applet_user_id' => 'require',
-        'is_submit' => 'require|in:0,1',
+        'is_submit' => 'require|in:0,1,2',
     ];
 
     protected $message = [
