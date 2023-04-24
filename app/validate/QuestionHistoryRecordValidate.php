@@ -10,7 +10,7 @@ class QuestionHistoryRecordValidate extends Validate
         'id' => 'require',
         'question_record_id' => 'require',
         'question_id' => 'require',
-        'is_current' => 'require|in:0,1',
+        'is_current' => 'require|in:0,1,2',
         'current_probability' => 'require|max:1',
     ];
 
