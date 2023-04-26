@@ -31,7 +31,7 @@ class StudyCategory extends Base
         $query = $this->category->field('id,name')->with(['video' => function ($query) {
             $query->where([['show_cover', '=', 1], ['status', '=', 1]]);
         }, 'article' => function ($query) {
-            $query->where([['show_cover', '=', 1], ['status', '=', 1]]);
+            $query->withoutField(['content'])->where([['show_cover', '=', 1], ['status', '=', 1]]);
         }])->where('status', 1);
 
         // 查询的数据总数
