@@ -44,4 +44,27 @@ class StudyCategory extends Base
         ];
         return $this->success('success', $data);
     }
+
+    /**
+     * 获取学习资源分类列表
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getStudyCategoryList(Request $request) {
+        $query = $this->category->field('id,name')->where('status', 1);
+
+        // 查询的数据总数
+        $total = $query->count();
+        $res = $query->order('sort', 'desc')->select();
+
+        $data = [
+            'total' => $total,
+            'data' => $res
+        ];
+        return $this->success('success', $data);
+
+    }
 }
