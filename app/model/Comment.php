@@ -33,6 +33,25 @@ class Comment extends Model
     }
 
     /**
+     * 判断评论是否合法，自动审核
+     * @param $sensitive_words
+     * @param $content
+     * @return bool
+     */
+    function check_comment_content($sensitive_words,$content)
+    {
+        global $sensitive_words;
+
+        // 检测评论内容是否包含敏感词
+        foreach ($sensitive_words as $word) {
+            if (strpos($content, $word) !== false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * 监听评论删除，统计文章和视频的评论数量
      * @param $comment
      * @return void
