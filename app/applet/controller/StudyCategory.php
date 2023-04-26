@@ -67,4 +67,28 @@ class StudyCategory extends Base
         return $this->success('success', $data);
 
     }
+
+    /**
+     * 根据资源分类获取封面资源
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function sources(Request $request) {
+        $category = $request->param('category','');
+
+        if($category === '') {
+            return $this->error('请选择分类');
+        }
+
+        $data = $this->category->field('id,name')->with(['video' => function ($query) {
+            $query->where([['show_cover', '=', 1], ['status', '=', 1]]);
+        }, 'article' => function ($query) {
+            $query->withoutField(['content'])->where([['show_cover', '=', 1], ['status', '=', 1]]);
+        }])->find($category);
+
+        return $this->success('success',$data);
+    }
 }
