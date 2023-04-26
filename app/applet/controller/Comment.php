@@ -44,20 +44,24 @@ class Comment extends Base
             $query->hasWhere('article', ['id' => $articleId]);
         }
 
-        // 没有选择文章或视频
         if ($videoId !== '') {
             $query->hasWhere('video', ['id' => $videoId]);
         }
 
+        // 没有选择文章或视频
         if (empty($query)) {
             return $this->error('请选择文章或视频！');
         }
 
-        // 筛选出审核通过的评论
-        $query->where('comment.status', '=', 1);
+        // $query->hasWhere('user',['id' => $this->userId]);
+
+        // 筛选出审核通过的评论和用户自己的所有评论
+        $query->where(function ($q) {
+            $q->where('applet_user_id', '<>', $this->userId)->where('comment.status', 1)->whereOr('applet_user_id', $this->userId);
+        });
 
         $total = $query->count();
-        $res = $query->page($page, $limit)->select();
+        $res = $query->order('create_time','desc')->page($page, $limit)->select();
 
         $data = [
             'total' => $total,
