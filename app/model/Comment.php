@@ -40,8 +40,6 @@ class Comment extends Model
      */
     function check_comment_content($sensitive_words,$content)
     {
-        global $sensitive_words;
-
         // 检测评论内容是否包含敏感词
         foreach ($sensitive_words as $word) {
             if (strpos($content, $word) !== false) {

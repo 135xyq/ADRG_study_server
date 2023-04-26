@@ -7,18 +7,21 @@ use app\validate\CommentValidate;
 use think\App;
 use app\model\Comment as CommentModel;
 use think\exception\ValidateException;
+use app\model\AppletConfig as AppletConfigModel;
 
 class Comment extends Base
 {
 
     protected $comment;
     protected $userId;
+    protected $appletConfig;
 
     public function __construct(App $app)
     {
         parent::__construct($app);
         $this->userId = $this->userInfo['id'];
         $this->comment = new CommentModel();
+        $this->appletConfig = new AppletConfigModel();
     }
 
     /**
@@ -100,16 +103,39 @@ class Comment extends Base
             return $this->error('评论内容不能为空！');
         }
 
-        $res = CommentModel::create([
+
+        // 查询小程序配置信息
+        $config = $this->appletConfig->select();
+        if(count($config) > 0) {
+            // 敏感词
+            $sensitive_words = $config[0]['sensitive_words'];
+            // 是否自动审核
+            $isCheck = $config[0]['is_auto_check_comment'];
+
+            if($isCheck) {
+                $bool = $this->comment->check_comment_content($sensitive_words,$content);
+
+                if($bool) {
+                    $status = 1;
+                } else{
+                    $status = 2;
+                }
+            }
+        }
+
+        $data = [
             'content' => $content,
             'applet_user_id' => $applet_user_id,
             'video_id' => $videoId,
             'article_id' => $articleId,
             'status' => $status
-        ]);
+        ];
+
+        $res = CommentModel::create($data);
 
         return $this->success('评论成功');
     }
+
 
     /**
      * 用户删除评论
