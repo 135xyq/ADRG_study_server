@@ -59,7 +59,7 @@ class Feedback extends Base
         }
 
         $total = $query->count(); // 统计数量
-        $res = $query->page($page, $limit)->select();
+        $res = $query->order('create_time','desc')->page($page, $limit)->select();
 
         $data = [
             'total' => $total,
