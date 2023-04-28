@@ -70,7 +70,7 @@ class StudyHistory extends Base
             // 排序方式
             $res = $query->order($sort,'desc')->page($page, $limit)->select();
         }else{
-            $res = $query->page($page, $limit)->select();
+            $res = $query->order('create_time','desc')->page($page, $limit)->select();
         }
 
         $data = [
