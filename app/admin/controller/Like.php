@@ -35,6 +35,7 @@ class Like extends Base
         $video = $request->param('video', ''); // 视频id
         $userName = $request->param('userName',''); // 用户名
         $type = $request->param('type', 'all'); // 资源类型
+        $time = $request->param('time', ''); // 时间
 
 
         // 查询条件
@@ -65,6 +66,11 @@ class Like extends Base
             }else if($type === 'video') {
                 $query->where('video_id','not null');
             }
+        }
+
+        // 筛选时间段
+        if (!empty($time)) {
+            $query->whereBetweenTime('like.create_time', $time[0], $time[1]);
         }
 
         $total = $query->count(); // 统计数量
