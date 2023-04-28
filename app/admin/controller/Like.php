@@ -34,6 +34,7 @@ class Like extends Base
         $article = $request->param('article', ''); // 文章id
         $video = $request->param('video', ''); // 视频id
         $userName = $request->param('userName',''); // 用户名
+        $type = $request->param('type', 'all'); // 资源类型
 
 
         // 查询条件
@@ -58,7 +59,13 @@ class Like extends Base
             $query->field('id,nick_name');
         }])->hasWhere('user',$where1)->where($where);
 
-
+        if($type !== 'all') {
+            if($type === 'article') {
+                $query->where('article_id', 'not null');
+            }else if($type === 'video') {
+                $query->where('video_id','not null');
+            }
+        }
 
         $total = $query->count(); // 统计数量
         $res = $query->order('create_time','desc')->page($page, $limit)->select();
