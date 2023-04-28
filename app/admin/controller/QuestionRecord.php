@@ -2,6 +2,7 @@
 
 namespace app\admin\controller;
 
+use app\model\AppletUser;
 use app\model\Question as QuestionModel;
 use app\Request;
 use think\App;
@@ -52,8 +53,11 @@ class QuestionRecord extends Base
             $query = $query->hasWhere('questionCategory', ['id' => $category]);
         }
 
+        // 用户名检索
+        $where1 = AppletUser::where('nick_name','like','%'.$user.'%');
+
         if ($user !== '') {
-            $query = $query->hasWhere('user', ['id' => $user]);
+            $query = $query->hasWhere('user', $where1);
         }
 
         // 筛选类型
