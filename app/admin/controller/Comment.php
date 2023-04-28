@@ -36,6 +36,7 @@ class Comment extends Base
         $article = $request->param('article', ''); // 文章id
         $video = $request->param('video', ''); // 视频id
         $userName = $request->param('userName',''); // 用户名
+        $type = $request->param('type', 'all'); // 种类
 
         // 查询条件
         $where = [];
@@ -63,6 +64,14 @@ class Comment extends Base
         // 状态筛选
         if ($status !== '') {
             $query->where('status', '=', $status);
+        }
+
+        if($type !== 'all') {
+            if($type === 'article') {
+                $query->where('article_id', 'not null');
+            }else if($type === 'video') {
+                $query->where('video_id','not null');
+            }
         }
 
         // 关键词筛选
