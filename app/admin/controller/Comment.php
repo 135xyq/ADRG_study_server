@@ -37,6 +37,7 @@ class Comment extends Base
         $video = $request->param('video', ''); // 视频id
         $userName = $request->param('userName',''); // 用户名
         $type = $request->param('type', 'all'); // 种类
+        $time = $request->param('time', ''); // 时间
 
         // 查询条件
         $where = [];
@@ -77,6 +78,11 @@ class Comment extends Base
         // 关键词筛选
         if (!empty($keyword)) {
             $query->where('content', 'like', '%' . $keyword . '%');
+        }
+
+        // 筛选时间段
+        if (!empty($time)) {
+            $query->whereBetweenTime('comment.create_time', $time[0], $time[1]);
         }
 
         $total = $query->count(); // 统计数量
