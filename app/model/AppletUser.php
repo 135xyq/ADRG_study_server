@@ -25,4 +25,28 @@ class AppletUser extends Model
     {
         return $this->hasOne(AppletUserSet::class);
     }
+
+    // 关联评论表
+    public function comment()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    // 关联收藏表
+    public function star()
+    {
+        return $this->hasMany(Star::class);
+    }
+
+    // 关联点赞表
+    public function like()
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    // 关联做题记录表
+    public function questionRecord()
+    {
+        return $this->hasMany(QuestionRecord::class);
+    }
 }

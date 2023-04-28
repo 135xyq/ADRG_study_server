@@ -31,7 +31,12 @@ class AppletUser extends Base
         $limit = $request->param('limit', 20, 'intval');
         $keyword = $request->param('keyword', '');// 昵称关键词
 
-        $query = $this->appletUser->where('nick_name', 'like', '%'.$keyword.'%');
+        $query = $this->appletUser->with('userSet')
+            ->withCount('comment')
+            ->withCount('like')
+            ->withCount('star')
+            ->withCount('questionRecord')
+            ->where('nick_name', 'like', '%' . $keyword . '%');
 
         $total = $query->count();
         $res = $query->page($page, $limit)->select();
@@ -53,13 +58,14 @@ class AppletUser extends Base
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function searchUserList(Request $request) {
-        $name = $request->param('name','');
+    public function searchUserList(Request $request)
+    {
+        $name = $request->param('name', '');
 
-        $field = ['nick_name as name','id'];
+        $field = ['nick_name as name', 'id'];
 
-        $res = $this->appletUser->where('nick_name','like','%'.$name.'%')->field($field)->limit(20)->select();
+        $res = $this->appletUser->where('nick_name', 'like', '%' . $name . '%')->field($field)->limit(20)->select();
 
-        return $this->success('success',$res);
+        return $this->success('success', $res);
     }
 }
