@@ -52,24 +52,24 @@ class Question extends Base
         }
 
         // 等级查询
-        if($level!== '') {
+        if($level!= '') {
             $query->where('level','=',$level);
         }
 
         // 种类查询
-        if($type !== '') {
+        if($type != '') {
             $query->where('type','=',$type);
         }
 
         // 分类查询
-        if($category !== '') {
+        if($category != '') {
             $query->where('question_category_id','=',$category);
         }
 
         // 有无解析查询
-        if($parse === 1) {
+        if($parse == 1) {
             $query->where('parse','not null');
-        }else if($parse === 0){
+        }else if($parse == 0){
             $query->where('parse','null');
         }
 
@@ -107,6 +107,7 @@ class Question extends Base
         $data['level'] = $request->param('level');
         $data['question_category_id'] = $request->param('question_category_id');
 
+
         // 数据验证
         try {
             validate(QuestionValidate::class)->scene('add')->check([
@@ -124,7 +125,7 @@ class Question extends Base
 
         // 验证是否存在同名的题目
         if (!empty($data['title'])) {
-            $count = $this->question->where('title','=',$data['title'])->count();
+            $count = $this->question->where([['title','=',$data['title']],['question_category_id','=',$data['question_category_id']]])->count();
             if($count) {
                 return $this->error('题目名已存在');
             }
