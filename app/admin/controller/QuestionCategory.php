@@ -192,7 +192,7 @@ class QuestionCategory extends Base
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function list(Request $request) {
-        $res = $this->questionCategory->select();
+        $res = $this->questionCategory->order('sort', 'desc')->select();
         return $this->success('success',$res);
     }
 
