@@ -12,6 +12,7 @@ use think\exception\ValidateException;
 class StudyCategory extends Base
 {
     private $studyCategory;
+
     public function __construct(App $app)
     {
         parent::__construct($app);
@@ -40,14 +41,14 @@ class StudyCategory extends Base
         $query = $this->studyCategory->where('name', 'like', '%' . $name . '%');
 
         // 根据状态查询
-        if($status !== '') {
-            $query->where('status',$status);
+        if ($status !== '') {
+            $query->where('status', $status);
         }
 
         // 统计数量
         $count = $query->count();
 
-        $res = $query->field($field)->order('sort','desc')->page($page, $limit)->select();
+        $res = $query->field($field)->order('sort', 'desc')->page($page, $limit)->select();
 
         $result = [
             'total' => $count,
@@ -82,8 +83,8 @@ class StudyCategory extends Base
 
         // 验证是否存在同名的分类
         if (!empty($data['name'])) {
-            $count = $this->studyCategory->where('name','=',$data['name'])->count();
-            if($count) {
+            $count = $this->studyCategory->where('name', '=', $data['name'])->count();
+            if ($count) {
                 return $this->error('分类名已存在');
             }
         }
@@ -95,7 +96,7 @@ class StudyCategory extends Base
             // 记录日志
             $this->writeDoLog($data);
             // 响应信息
-            return $this->success('新增成功！',$res);
+            return $this->success('新增成功！', $res);
         } else {
             return $this->error('新增失败！');
         }
@@ -154,28 +155,28 @@ class StudyCategory extends Base
         // 判断分类名是否冲突
         if (!empty($request->param('name'))) {
             $data['name'] = $request->param('name');
-            $count = $this->studyCategory::where([['name','=',$data['name']],['id','<>',$id]])->count();
-            if($count) {
+            $count = $this->studyCategory::where([['name', '=', $data['name']], ['id', '<>', $id]])->count();
+            if ($count) {
                 return $this->error('分类名已存在');
             }
         }
 
         //判断是否修改描述信息
-        if(!empty($request->param('description'))) {
+        if (!empty($request->param('description'))) {
             $data['description'] = $request->param('description');
         }
 
         //判断是否修改排序信息
-        if($request->param('sort','') !== '') {
+        if ($request->param('sort', '') !== '') {
             $data['sort'] = $request->param('sort');
         }
 
         // 判断是否修改状态
-        if($request->param('status','') !== '') {
+        if ($request->param('status', '') !== '') {
             $data['status'] = $request->param('status');
         }
 
-        if(!empty($data)) {
+        if (!empty($data)) {
             $data['id'] = $id;
             // 写入日志数据库
             $this->writeDoLog($request->param());
@@ -195,9 +196,10 @@ class StudyCategory extends Base
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function list(Request $request) {
-        $res = $this->studyCategory->select();
-        return $this->success('success',$res);
+    public function list(Request $request)
+    {
+        $res = $this->studyCategory->order('sort', 'desc')->select();
+        return $this->success('success', $res);
     }
 
 }
