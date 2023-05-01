@@ -69,9 +69,9 @@ class QuestionHistoryRecord extends Model
 
         // 3是不限制难度
         if ($level !== 3) {
-            $data = (new Question)->whereIn('id', $ids)->where('level', '=', $level)->where('status', '=', 1)->field($this->filed);
+            $data = (new Question)->whereIn('id', $ids)->where('level', '=', $level)->where('question_category_id', '=', $category)->where('status', '=', 1)->field($this->filed);
         } else {
-            $data = (new Question)->whereIn('id', $ids)->where('status', '=', 1)->field($this->filed);
+            $data = (new Question)->whereIn('id', $ids)->where('status', '=', 1)->where('question_category_id', '=', $category)->field($this->filed);
         }
         return $data;
     }
