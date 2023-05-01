@@ -95,9 +95,9 @@ class QuestionHistoryRecord extends Model
         // 获取没有做过的题目
         // 3是不限制难度
         if ($level !== 3) {
-            $data = (new Question)->whereNotIn('id', $doneIds)->where('level', '=', $level)->where('status', '=', 1)->field($this->filed);
+            $data = (new Question)->whereNotIn('id', $doneIds)->where('level', '=', $level)->where('question_category_id', '=', $category)->where('status', '=', 1)->field($this->filed);
         } else {
-            $data = (new Question)->whereNotIn('id', $doneIds)->where('status', '=', 1)->field($this->filed);
+            $data = (new Question)->whereNotIn('id', $doneIds)->where('question_category_id', '=', $category)->where('status', '=', 1)->field($this->filed);
         }
 
         return $data;
