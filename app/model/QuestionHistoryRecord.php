@@ -94,7 +94,7 @@ class QuestionHistoryRecord extends Model
 
         // 获取没有做过的题目
         // 3是不限制难度
-        if ($level !== 3) {
+        if ($level != 3) {
             $data = (new Question)->whereNotIn('id', $doneIds)->where('level', '=', $level)->where('question_category_id', '=', $category)->where('status', '=', 1)->field($this->filed);
         } else {
             $data = (new Question)->whereNotIn('id', $doneIds)->where('question_category_id', '=', $category)->where('status', '=', 1)->field($this->filed);
@@ -112,7 +112,7 @@ class QuestionHistoryRecord extends Model
     public function getAllQuestion($category, $level)
     {
         // 获取所有的题目,3不限制难度
-        if ($level !== 3) {
+        if ($level != 3) {
             $data = (new Question)->where('question_category_id', '=', $category)->where('status', '=', 1)->where('level', '=', $level)->field($this->filed);
         } else {
             $data = (new Question)->where('question_category_id', '=', $category)->where('status', '=', 1)->field($this->filed);
