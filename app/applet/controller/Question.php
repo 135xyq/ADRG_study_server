@@ -289,4 +289,29 @@ class Question extends Base
 
         return $this->success('success',$res);
     }
+
+
+    /**
+     * 获取题目详情
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getQuestionDetail(Request $request) {
+        $id  = $request->param('id','');
+
+        if($id === '') {
+            return $this->error('请选择题目！');
+        }
+
+        $res = $this->question->where('status','=',1)->find($id);
+
+        if(empty($res)){
+            return $this->error('题目不存在');
+        }
+
+        return $this->success('success',$res);
+    }
 }
