@@ -42,17 +42,17 @@ class Search extends Base
 
         // 查询文章
         if($type === 'article') {
-            $query = $this->article->where('title','like','%'.$content.'%');
+            $query = $this->article->where('title','like','%'.$content.'%')->where('status','=',1);
         }
 
         // 查询视频
         if($type === 'video') {
-            $query = $this->video->where('title','like','%'.$content.'%');
+            $query = $this->video->where('title','like','%'.$content.'%')->where('status','=',1);
         }
 
         // 查询文章
         if($type === 'question') {
-            $query = $this->question->where('title','like','%'.$content.'%');
+            $query = $this->question->where('title','like','%'.$content.'%')->where('status','=',1);
         }
 
         $total = $query->count();
